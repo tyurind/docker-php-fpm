@@ -1,0 +1,17 @@
+#
+#--------------------------------------------------------------------------
+# PHAP Lib Installation
+#--------------------------------------------------------------------------
+#
+
+RUN curl -s http://getcomposer.org/installer | php && \
+    echo "export PATH=${PATH}:/var/www/vendor/bin" >> ~/.bashrc && \
+    mv composer.phar /usr/local/bin/composer
+
+RUN curl -L http://cs.sensiolabs.org/download/php-cs-fixer-v2.phar -o php-cs-fixer && \
+    chmod a+x php-cs-fixer && \
+    mv php-cs-fixer /usr/local/bin/php-cs-fixer
+
+RUN curl -L https://phar.phpunit.de/phpunit-skelgen.phar -o phpunit-skelgen && \
+    chmod a+x phpunit-skelgen && \
+    mv phpunit-skelgen /usr/local/bin/phpunit-skelgen

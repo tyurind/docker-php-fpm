@@ -1,0 +1,36 @@
+#
+#--------------------------------------------------------------------------
+# Core Software's Installation
+#--------------------------------------------------------------------------
+#
+
+RUN apt-get update -yqq
+RUN apt-get install -y --no-install-recommends \
+    autoconf \
+    curl \
+    g++ \
+    libfreetype6-dev \
+    libgmp-dev \
+    libicu-dev \
+    libjpeg-dev \
+    libldap2-dev \
+    libmcrypt-dev \
+    libmemcached-dev \
+    libpng12-dev \
+    libpq-dev \
+    librabbitmq-dev \
+    libssl-dev \
+    libxml2-dev \
+    libz-dev \
+    wget \
+    zlib1g-dev \
+# --
+    libzip-dev \
+    zip \
+    unzip \
+    python-setuptools
+
+
+RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
+RUN apt-get update -yqq && \
+    apt-get install -y lsb-release

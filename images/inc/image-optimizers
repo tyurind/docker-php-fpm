@@ -1,0 +1,3 @@
+# Image optimizers:
+RUN apt-get update -yqq && \
+    apt-get install -y jpegoptim optipng pngquant gifsicle

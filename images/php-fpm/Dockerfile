@@ -14,6 +14,8 @@
 
 FROM php:7.1-fpm
 
+COPY .      /bd_build
+ADD ./bin /usr/sbin
 
 #
 #--------------------------------------------------------------------------
@@ -29,7 +31,6 @@ RUN apt-get install -y --no-install-recommends \
     libfreetype6-dev \
     libgmp-dev \
     libicu-dev \
-    libicu-dev \
     libjpeg-dev \
     libldap2-dev \
     libmcrypt-dev \
@@ -41,16 +42,18 @@ RUN apt-get install -y --no-install-recommends \
     libxml2-dev \
     libz-dev \
     wget \
-    zlib1g-dev
+    zlib1g-dev \
+# --
+    libzip-dev \
+    zip \
+    unzip \
+    python-setuptools
 
-
-# Image optimizers:
-RUN apt-get update -yqq && \
-    apt-get install -y jpegoptim optipng pngquant gifsicle
 
 RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
 RUN apt-get update -yqq && \
     apt-get install -y lsb-release
+### <include> ../inc/image-optimizers
 #
 #--------------------------------------------------------------------------
 # PHP Installation
@@ -78,7 +81,7 @@ RUN pecl install -o -f redis     && docker-php-ext-enable redis
 RUN pecl install -o -f xdebug    && docker-php-ext-enable xdebug
 RUN pecl install -o -f swoole    && docker-php-ext-enable swoole
 RUN pecl install -o -f amqp      && docker-php-ext-enable amqp
-RUN pecl install -o -f mongodb   && docker-php-ext-enable mongodb
+# RUN pecl install -o -f mongodb   && docker-php-ext-enable mongodb
 RUN pecl install -o -f memcached && docker-php-ext-enable memcached
 
 # imagemagick
@@ -99,10 +102,11 @@ RUN docker-php-ext-configure intl && \
 RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ && \
     docker-php-ext-install ldap
 
-COPY ./opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-COPY ./xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
-ADD ./laravel.ini /usr/local/etc/php/conf.d
-ADD ./xlaravel.pool.conf /usr/local/etc/php-fpm.d/
+COPY ./php-ini/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY ./php-ini/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+ADD  ./php-ini/laravel.ini /usr/local/etc/php/conf.d
+ADD  ./php-ini/xlaravel.pool.conf /usr/local/etc/php-fpm.d/
+
 
 #
 #--------------------------------------------------------------------------
@@ -115,35 +119,22 @@ RUN wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key ad
 RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
 RUN apt-get update -yq && \
 	apt-get install -y postgresql-client
-#
-#--------------------------------------------------------------------------
-# PHAP Lib Installation
-#--------------------------------------------------------------------------
-#
 
 RUN curl -s http://getcomposer.org/installer | php && \
-    echo "export PATH=${PATH}:/var/www/vendor/bin" >> ~/.bashrc && \
     mv composer.phar /usr/local/bin/composer
 
-RUN curl -L http://cs.sensiolabs.org/download/php-cs-fixer-v2.phar -o php-cs-fixer && \
-    chmod a+x php-cs-fixer && \
-    mv php-cs-fixer /usr/local/bin/php-cs-fixer
-
-RUN curl -L https://phar.phpunit.de/phpunit-skelgen.phar -o phpunit-skelgen && \
-    chmod a+x phpunit-skelgen && \
-    mv phpunit-skelgen /usr/local/bin/phpunit-skelgen
 #
 #--------------------------------------------------------------------------
 # Clear code
 #--------------------------------------------------------------------------
 #
 
-RUN apt-get autoremove -y && apt-get autoclean -y && apt-get clean -y
-RUN rm -rf /var/lib/apt/lists/* && \
-	rm -rf /tmp/* /var/tmp/* /tmp/pear && \
-    mkdir -p /var/www
-
-RUN usermod -u 1000 www-data
+RUN apt-get autoremove -y \
+    && apt-get autoclean -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/* /var/tmp/* /tmp/pear \
+    && mkdir -p /var/www
 
 WORKDIR /var/www
 

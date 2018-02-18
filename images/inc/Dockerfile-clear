@@ -1,0 +1,12 @@
+#
+#--------------------------------------------------------------------------
+# Clear code
+#--------------------------------------------------------------------------
+#
+
+RUN apt-get autoremove -y \
+    && apt-get autoclean -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/* /var/tmp/* /tmp/pear \
+    && mkdir -p /var/www
