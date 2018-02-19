@@ -102,11 +102,12 @@ RUN docker-php-ext-configure intl && \
 RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ && \
     docker-php-ext-install ldap
 
-COPY ./php-ini/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-COPY ./php-ini/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
-ADD  ./php-ini/laravel.ini /usr/local/etc/php/conf.d
-ADD  ./php-ini/xlaravel.pool.conf /usr/local/etc/php-fpm.d/
+# Stop xDebug
+RUN sed -i 's/^zend_extension=/;zend_extension=/g' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
+
+ADD ./conf.d/*.ini /usr/local/etc/php/conf.d/
+ADD ./php-fpm.d/*.conf /usr/local/etc/php-fpm.d/
 
 #
 #--------------------------------------------------------------------------

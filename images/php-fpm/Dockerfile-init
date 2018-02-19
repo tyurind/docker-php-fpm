@@ -21,11 +21,8 @@ ADD ./bin /usr/sbin
 ### <include> ../inc/image-optimizers
 ### <include> ../inc/Dockerfile-php
 
-COPY ./php-ini/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-COPY ./php-ini/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
-ADD  ./php-ini/laravel.ini /usr/local/etc/php/conf.d
-ADD  ./php-ini/xlaravel.pool.conf /usr/local/etc/php-fpm.d/
-
+ADD ./conf.d/*.ini /usr/local/etc/php/conf.d/
+ADD ./php-fpm.d/*.conf /usr/local/etc/php-fpm.d/
 
 ### <include> ../inc/postgres.inc
 
