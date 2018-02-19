@@ -2,7 +2,7 @@
 
 
 
-REF=$(git log -1 --pretty=format:%h develop)
+REF=$(git log -1 --pretty=format:%h)
 
 DOCKER_IMAGE_NAME="fobia/docker-php-fpm"
 DOCKER_IMAGE_TAG="71-${REF}"
