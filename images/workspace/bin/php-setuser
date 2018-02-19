@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# ls -s /etc/alternatives/php /usr/local/sbin/php
+# update-alternatives --install /usr/local/sbin/php php /usr/local/bin/php 1000
+# update-alternatives --install /usr/local/sbin/php php /usr/local/sbin/php-setuser 2000
+
+USER_WORKER=${USER_WORKER-www-data}
+
+if [[ $(id -u) == "0" ]]; then
+    # echo "/usr/sbin/setuser $USER_WORKER php $*"
+    /usr/sbin/setuser $USER_WORKER /usr/local/bin/php $*
+else
+    # id
+    # echo "/usr/local/bin/php $*"
+    /usr/local/bin/php $*
+fi

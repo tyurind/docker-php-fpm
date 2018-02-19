@@ -14,7 +14,6 @@
 
 FROM laradock/workspace:2.0-71
 
-MAINTAINER Mahmoud Zalt <mahmoud@zalt.me>
 
 # Remove Faillog and Lastlog to reduce the size of the final image.
 RUN rm /var/log/lastlog /var/log/faillog
@@ -41,6 +40,9 @@ RUN rm /var/log/lastlog /var/log/faillog
 #   - INSTALL_NODE=false
 #   - ...
 #
+
+COPY .      /bd_build
+ADD ./bin /usr/sbin
 
 #####################################
 # Non-Root User:
@@ -378,35 +380,35 @@ RUN if [ ${INSTALL_YARN} = true ]; then \
 #####################################
 # PHP Aerospike:
 #####################################
-USER root
+# USER root
 
-ARG INSTALL_AEROSPIKE=false
-ENV INSTALL_AEROSPIKE ${INSTALL_AEROSPIKE}
+# ARG INSTALL_AEROSPIKE=false
+# ENV INSTALL_AEROSPIKE ${INSTALL_AEROSPIKE}
 
 # Copy aerospike configration for remote debugging
-COPY ./aerospike.ini /etc/php/7.1/cli/conf.d/aerospike.ini
+# COPY ./aerospike.ini /etc/php/7.1/cli/conf.d/aerospike.ini
 
-RUN if [ ${INSTALL_AEROSPIKE} = true ]; then \
-    # Fix dependencies for PHPUnit within aerospike extension
-    ##apt-get update -yqq && \
-    apt-get -y install sudo wget && \
+# RUN if [ ${INSTALL_AEROSPIKE} = true ]; then \
+#     # Fix dependencies for PHPUnit within aerospike extension
+#     ##apt-get update -yqq && \
+#     apt-get -y install sudo wget && \
 
-    # Install the php aerospike extension
-    curl -L -o /tmp/aerospike-client-php.tar.gz "https://github.com/aerospike/aerospike-client-php/archive/master.tar.gz" \
-    && mkdir -p aerospike-client-php \
-    && tar -C aerospike-client-php -zxvf /tmp/aerospike-client-php.tar.gz --strip 1 \
-    && ( \
-        cd aerospike-client-php/src \
-        && phpize \
-        && ./build.sh \
-        && make install \
-    ) \
-    && rm /tmp/aerospike-client-php.tar.gz \
-;fi
+#     # Install the php aerospike extension
+#     curl -L -o /tmp/aerospike-client-php.tar.gz "https://github.com/aerospike/aerospike-client-php/archive/master.tar.gz" \
+#     && mkdir -p aerospike-client-php \
+#     && tar -C aerospike-client-php -zxvf /tmp/aerospike-client-php.tar.gz --strip 1 \
+#     && ( \
+#         cd aerospike-client-php/src \
+#         && phpize \
+#         && ./build.sh \
+#         && make install \
+#     ) \
+#     && rm /tmp/aerospike-client-php.tar.gz \
+# ;fi
 
-RUN if [ ${INSTALL_AEROSPIKE} = false ]; then \
-    rm /etc/php/7.1/cli/conf.d/aerospike.ini \
-;fi
+# RUN if [ ${INSTALL_AEROSPIKE} = false ]; then \
+#     rm /etc/php/7.1/cli/conf.d/aerospike.ini \
+# ;fi
 
 #####################################
 # PHP V8JS:
@@ -592,31 +594,31 @@ RUN if [ ${INSTALL_MSSQL} = true ]; then \
 #####################################
 # Minio:
 #####################################
-USER root
-ARG INSTALL_MC=false
-ENV INSTALL_MC ${INSTALL_MC}
+# USER root
+# ARG INSTALL_MC=false
+# ENV INSTALL_MC ${INSTALL_MC}
 
-COPY mc/config.json /root/.mc/config.json
+# COPY mc/config.json /root/.mc/config.json
 
-RUN if [ ${INSTALL_MC} = true ]; then\
-    curl -fsSL -o /usr/local/bin/mc https://dl.minio.io/client/mc/release/linux-amd64/mc && \
-    chmod +x /usr/local/bin/mc \
-;fi
+# RUN if [ ${INSTALL_MC} = true ]; then\
+#     curl -fsSL -o /usr/local/bin/mc https://dl.minio.io/client/mc/release/linux-amd64/mc && \
+#     chmod +x /usr/local/bin/mc \
+# ;fi
 
 #####################################
 # Image optimizers:
 #####################################
-USER root
-ARG INSTALL_IMAGE_OPTIMIZERS=true
-ENV INSTALL_IMAGE_OPTIMIZERS ${INSTALL_IMAGE_OPTIMIZERS}
-RUN if [ ${INSTALL_IMAGE_OPTIMIZERS} = true ]; then \
-    apt-get install -y jpegoptim optipng pngquant gifsicle && \
-    if [ ${INSTALL_NODE} = true ]; then \
-        . ~/.bashrc && npm install -g svgo \
-    ;fi\
-;fi
+# USER root
+# ARG INSTALL_IMAGE_OPTIMIZERS=true
+# ENV INSTALL_IMAGE_OPTIMIZERS ${INSTALL_IMAGE_OPTIMIZERS}
+# RUN if [ ${INSTALL_IMAGE_OPTIMIZERS} = true ]; then \
+#     apt-get install -y jpegoptim optipng pngquant gifsicle && \
+#     if [ ${INSTALL_NODE} = true ]; then \
+#         . ~/.bashrc && npm install -g svgo \
+#     ;fi\
+# ;fi
 
-USER laradock
+# USER laradock
 
 #####################################
 # Symfony:
@@ -743,8 +745,8 @@ RUN composer self-update
 # Final Touch
 #--------------------------------------------------------------------------
 #
-USER laradock
-RUN echo 'export PATH="/var/www:$PATH"' >> ~/.bashrc
+# USER laradock
+# RUN echo 'export PATH="/var/www:$PATH"' >> ~/.bashrc
 
 # Clean up
 USER root
