@@ -20,12 +20,14 @@ if [ -z "$ID" ]; then
     # если пользователя нет, то создадим
     adduser --system --shell /bin/bash --no-create-home --uid ${PUID} --disabled-password $USER_WORKER  2>/dev/null
 else
-    # если пользователя уже есть, установим UID и GID из переменных окружения
-    if [ $(id -u $USER_WORKER) != "${PUID}" ]; then
-        usermod -u ${PUID} $USER_WORKER 2>/dev/null
-    fi
+    if [ "$PUID" != "33" ]; then
+        # если пользователя уже есть, установим UID и GID из переменных окружения
+        if [ $(id -u $USER_WORKER) != "${PUID}" ]; then
+            usermod -u ${PUID} $USER_WORKER 2>/dev/null
+        fi
 
-    if [ $(id -g $USER_WORKER) != "${PGID}" ]; then
-        groupmod -g ${PGID} $USER_WORKER 2>/dev/null
+        if [ $(id -g $USER_WORKER) != "${PGID}" ]; then
+            groupmod -g ${PGID} $USER_WORKER 2>/dev/null
+        fi
     fi
 fi
