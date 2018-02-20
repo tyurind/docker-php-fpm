@@ -4,6 +4,19 @@
 DIR=$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
 cd "$DIR"
 
+
+_parse_sed ()
+{
+	#!/bin/sed -f
+	sed -e '
+/#include/!d
+s~^#include <\(../inc/\)\(.*\)>~#include <\1\2> {\nr \2\nd}\n~
+s~/~\\/~g
+s~r ~r inc/~g
+s~^\(#include .*\) {~/\1/ {~
+' $1
+}
+
 _parse()
 {
 	INPUT_FILE=$1

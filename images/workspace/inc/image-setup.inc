@@ -3,6 +3,9 @@
 # Image Setup
 #--------------------------------------------------------------------------
 #
+# See: https://raw.githubusercontent.com/laradock/workspace/master/Dockerfile-71
+#
+#
 
 FROM phusion/baseimage:latest
 
