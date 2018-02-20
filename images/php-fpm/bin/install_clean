@@ -12,7 +12,7 @@ fi
 
 if [[ $# != 0 ]]; then
     echo "Installing $ARGS"
-    apt-get -qy update && apt-get -qy install $NO_RECOMMENDS $ARGS
+    apt-get -yqq update && apt-get -qy install $NO_RECOMMENDS $ARGS
 fi
 
 apt-get autoremove -qy \
