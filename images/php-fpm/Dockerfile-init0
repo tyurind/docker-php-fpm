@@ -11,11 +11,19 @@
 #
 # Note: Base Image name format {image-tag}-{php-version}
 #
-
+Dockerfile-init
 FROM php:7.1-fpm
 
 COPY .      /bd_build
 ADD ./bin /usr/sbin
+
+#include <../inc/Dockerfile-core>
+
+#include <../inc/image-optimizers>
+
+#include <../inc/Dockerfile-php>
+
+#include <../inc/postgres.inc>
 
 ### <include> ../inc/Dockerfile-core
 ### <include> ../inc/image-optimizers
@@ -30,6 +38,9 @@ RUN curl -s http://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer
 
 ### <include> ../inc/Dockerfile-clear
+
+#include <../inc/Dockerfile-clear>
+
 
 WORKDIR /var/www
 
