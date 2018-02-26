@@ -3,31 +3,20 @@
 # Image Setup
 #--------------------------------------------------------------------------
 #
-# To edit the 'php-fpm' base Image, visit its repository on Github
-#    https://github.com/Laradock/php-fpm
-#
-# To change its version, see the available Tags on the Docker Hub:
-#    https://hub.docker.com/r/laradock/php-fpm/tags/
-#
-# Note: Base Image name format {image-tag}-{php-version}
 #
 
 FROM php:7.1-fpm
+
+RUN mkdir -p /var/www 2>&1 >/dev/null
 
 COPY .      /bd_build
 ADD ./bin /usr/sbin
 
 ### <include> ../inc/Dockerfile-core
-### <include> ../inc/image-optimizers
 ### <include> ../inc/Dockerfile-php
 
 ADD ./conf.d/*.ini /usr/local/etc/php/conf.d/
 ADD ./php-fpm.d/*.conf /usr/local/etc/php-fpm.d/
-
-### <include> ../inc/postgres.inc
-
-RUN curl -s http://getcomposer.org/installer | php && \
-    mv composer.phar /usr/local/bin/composer
 
 ### <include> ../inc/Dockerfile-clear
 

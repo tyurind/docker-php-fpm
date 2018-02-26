@@ -1,3 +1,44 @@
+#
+#--------------------------------------------------------------------------
+# Image Setup
+#--------------------------------------------------------------------------
+#
+#
+
+FROM php:7.1-fpm
+
+RUN mkdir -p /var/www 2>&1 >/dev/null
+
+COPY .      /bd_build
+ADD ./bin /usr/sbin
+
+#
+#--------------------------------------------------------------------------
+# Core Software's Installation
+#--------------------------------------------------------------------------
+#
+
+RUN apt-get update -yqq
+RUN apt-get install -y --no-install-recommends \
+        wget \
+        curl \
+        libmemcached-dev \
+        libz-dev \
+        libpq-dev \
+        libjpeg-dev \
+        libpng12-dev \
+        libfreetype6-dev \
+        libssl-dev \
+        libmcrypt-dev \
+        libzip-dev libicu-dev zip unzip \
+        libldap2-dev \
+        librabbitmq-dev \
+        libgmp-dev \
+        libxml2-dev \
+        python-setuptools \
+        lsb-release
+
+# END Core Software's Installation  -------------
 
 #
 #--------------------------------------------------------------------------
@@ -132,3 +173,24 @@ RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ && \
 
 
 # END PHP Installation --------------------------
+
+ADD ./conf.d/*.ini /usr/local/etc/php/conf.d/
+ADD ./php-fpm.d/*.conf /usr/local/etc/php-fpm.d/
+
+#
+#--------------------------------------------------------------------------
+# Clear code
+#--------------------------------------------------------------------------
+#
+
+RUN apt-get autoremove -y \
+    && apt-get autoclean -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/* /var/tmp/* /tmp/pear
+
+WORKDIR /var/www
+
+CMD ["php-fpm"]
+
+EXPOSE 9000
