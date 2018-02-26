@@ -220,7 +220,7 @@ RUN apt-get install -y --no-install-recommends \
 ## dependency:
 ##     libc-dev
 ##
-docker-php-ext-install pcntl
+RUN docker-php-ext-install pcntl
 
 
 # END PHP Installation --------------------------
@@ -229,7 +229,6 @@ ADD ./conf.d/*.ini /usr/local/etc/php/conf.d/
 ADD ./php-fpm.d/*.conf /usr/local/etc/php-fpm.d/
 
 
-#
 #--------------------------------------------------------------------------
 # Postgres client
 #--------------------------------------------------------------------------

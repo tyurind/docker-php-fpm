@@ -178,7 +178,7 @@ RUN apt-get install -y --no-install-recommends \
 ## dependency:
 ##     libc-dev
 ##
-docker-php-ext-install pcntl
+RUN docker-php-ext-install pcntl
 
 
 # END PHP Installation --------------------------
