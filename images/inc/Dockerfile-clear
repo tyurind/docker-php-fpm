@@ -3,9 +3,10 @@
 # Clear code
 #--------------------------------------------------------------------------
 #
+USER root
 
 RUN apt-get autoremove -y \
     && apt-get autoclean -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /tmp/* /var/tmp/* /tmp/pear
+    && rm -rf /tmp/* /var/tmp/*

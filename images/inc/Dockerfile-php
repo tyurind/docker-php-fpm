@@ -4,6 +4,9 @@
 # PHP Installation
 #--------------------------------------------------------------------------
 #
+USER root
+
+RUN pecl update-channels
 
 RUN docker-php-ext-configure gd \
     --enable-gd-native-ttf \
@@ -11,26 +14,25 @@ RUN docker-php-ext-configure gd \
     --with-freetype-dir=/usr/include/freetype2 && \
     docker-php-ext-install gd
 
-RUN docker-php-ext-install bcmath
-RUN docker-php-ext-install exif
-RUN docker-php-ext-install mbstring
 RUN docker-php-ext-install opcache
-RUN docker-php-ext-install pdo
+RUN docker-php-ext-install mbstring
+RUN docker-php-ext-install bcmath
+RUN docker-php-ext-install tokenizer
+RUN docker-php-ext-install exif
 RUN docker-php-ext-install sockets
+RUN docker-php-ext-install pdo
 RUN docker-php-ext-install pdo_mysql
 RUN docker-php-ext-install pdo_pgsql
 RUN docker-php-ext-install pgsql
-RUN docker-php-ext-install tokenizer
+
+
+#####################################
+# xml :
+#####################################
+## dependency:
+##      libxml2-dev
+##
 RUN docker-php-ext-install xml
-
-
-#
-#--------------------------------------------------------------------------
-# PECL Installation
-#--------------------------------------------------------------------------
-#
-
-RUN pecl update-channels
 
 
 #####################################

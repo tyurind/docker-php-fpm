@@ -3,6 +3,7 @@
 # Core Software's Installation
 #--------------------------------------------------------------------------
 #
+USER root
 
 RUN apt-get update -yqq
 RUN apt-get install -y --no-install-recommends \
