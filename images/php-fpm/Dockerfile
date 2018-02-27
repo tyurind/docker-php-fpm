@@ -242,6 +242,8 @@ RUN apt-get update -yqq && \
 
 # END Postgres client ---------------------------
 
+RUN curl -s http://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer
 
 #
 #--------------------------------------------------------------------------

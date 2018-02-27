@@ -48,7 +48,8 @@ RUN pecl install -o -f redis     && docker-php-ext-enable redis
 #####################################
 ##
 RUN pecl install -o -f apcu     && docker-php-ext-enable apcu
-
+# Disable apcu
+#RUN sed -i 's/^extension=/;extension=/' /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini
 
 #####################################
 # xDebug :
@@ -110,9 +111,16 @@ RUN pecl install -o -f memcached && \
 ## dependency:
 ##      libxml2-dev php-soap
 ##
-#RUN apt-get -y install libxml2-dev php-soap && \
-#    docker-php-ext-install soap
+RUN apt-get install -y --no-install-recommends \
+        libxml2-dev && \
+    docker-php-ext-install soap
 
+
+#####################################
+# Swoole EXTENSION FOR PHP 7
+#####################################
+RUN pecl install swoole \
+    &&  docker-php-ext-enable swoole
 
 #####################################
 # amqp :

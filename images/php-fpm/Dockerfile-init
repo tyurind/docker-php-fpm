@@ -18,6 +18,9 @@ ADD ./bin /usr/sbin
 ADD ./conf.d/*.ini /usr/local/etc/php/conf.d/
 ADD ./php-fpm.d/*.conf /usr/local/etc/php-fpm.d/
 
+RUN curl -s http://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer
+
 ### <include> ../inc/Dockerfile-clear
 
 WORKDIR /var/www
