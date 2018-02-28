@@ -16,6 +16,11 @@ ID=$(id -u $USER_WORKER 2>/dev/null)
 # echo "PGID: $PGID"
 # echo "ID: $ID"
 
+# Меньше чем пользовательский ID
+# if [ "$PUID" -lt  "1000" ]; then
+    # exit 0
+# else
+
 if [ -z "$ID" ]; then
     # если пользователя нет, то создадим
     adduser --system --shell /bin/bash --no-create-home --uid ${PUID} --disabled-password $USER_WORKER  2>/dev/null

@@ -244,6 +244,10 @@ RUN docker-php-ext-install pcntl
 ADD ./conf.d/*.ini /usr/local/etc/php/conf.d/
 ADD ./php-fpm.d/*.conf /usr/local/etc/php-fpm.d/
 
+
+RUN curl -s http://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer
+
 #
 #--------------------------------------------------------------------------
 # Clear code

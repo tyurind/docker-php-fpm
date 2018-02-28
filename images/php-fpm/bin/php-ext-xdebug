@@ -1,0 +1,23 @@
+#!/bin/sh
+
+if [ ! -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ]; then
+    echo "No find module xDebug"
+    echo "   /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini - not exists"
+    exit 0
+fi
+
+case $1 in
+    enable|ENABLE)
+        sed -i 's/^;zend_extension=/zend_extension=/g' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+        ;;
+    disable|DISABLE)
+        sed -i 's/^zend_extension=/;zend_extension=/g' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+        ;;
+    *)
+        echo "Usage:"
+        echo "  $0 enable|disable"
+        exit 1
+
+esac
+
+exit 0
