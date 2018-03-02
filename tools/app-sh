@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+#
+# A customized bash environment suitable for git work.
+#
+# Copyright (C) 2008 Ryan Tomayko <http://tomayko.com/>
+# Copyright (C) 2008 Aristotle Pagaltzis <http://plasmasturm.org/>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# Distributed under the GNU General Public License, version 2.0.
+
+
+# we expect to be sourced into an interactive shell. when executed as a
+# command, kick off a new shell and source us.
+[ "$0" = 'bash' ] ||
+exec /usr/bin/env bash --rcfile "$0" "$@"
+
+# source the user's .bashrc file
+[ -r ~/.bashrc ] && {
+        pushd ~ > /dev/null
+        . .bashrc
+        popd > /dev/null
+}
+
+# use to install the sh alias
+
+# \033[00m \033[07;30m 07;30m \033[00m
+
+black=$(tput -Txterm setaf 0)
+red=$(tput -Txterm setaf 1)
+green=$(tput -Txterm setaf 2)
+yellow=$(tput -Txterm setaf 3)
+dk_blue=$(tput -Txterm setaf 4)
+pink=$(tput -Txterm setaf 5)
+lt_blue=$(tput -Txterm setaf 6)
+
+reset=$(tput -Txterm sgr0)
+bold=$(tput -Txterm bold)
+bg=$(echo -ne "\033[07m")
+
+rbold="${reset}${bold}"
+rbg="${reset}${bg}"
+
+__clear_color()
+{
+    black=""
+    red=""
+    green=""
+    yellow=""
+    dk_blue=""
+    pink=""
+    lt_blue=""
+    reset=""
+    bold=""
+    bg=""
+    rbold=""
+    rbg=""
+}
+
+# if [[ -x /sbin/tput ]]; then echo "ok"; fi
+
+__clear_color
+
+PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\e[31;01m\]\u\[\e[0m\]@\h:\w\$ '
+
+# echo -e " \033[00m \033[07;30m "
+# echo;
+echo "${bg}${yellow}red text"
+
+# develop!docker-php-fpm/tools *>
+# /etc/terminfo
