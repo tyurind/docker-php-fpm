@@ -34,6 +34,24 @@ RUN add-apt-repository -y ppa:ondrej/php && \
     apt-get update -yqq && \
     apt-get install -y sudo lsb-release
 
+
+# ARG PUID=1000
+# ARG PGID=1000
+
+# ENV PUID ${PUID}
+# ENV PGID ${PGID}
+
+RUN groupadd -g 1000 workuser && \
+    useradd -u 1000 -g workuser -m workuser && \
+    mkdir -p /home/workuser && \
+    cp /bd_build/aliases.sh /home/workuser/aliases.sh && \
+    touch  /home/workuser/.bashrc && \
+    echo "" >> /home/workuser/.bashrc && \
+    echo "# Load Custom Aliases" >> /home/workuser/.bashrc && \
+    echo "source /home/workuser/aliases.sh" >> /home/workuser/.bashrc && \
+    echo "" >> /home/workuser/.bashrc && \
+    chown -R workuser:workuser /home/workuser
+
 #####################################
 # Set Timezone
 #####################################

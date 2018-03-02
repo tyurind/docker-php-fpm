@@ -1,0 +1,195 @@
+version: '2'
+
+
+
+services:
+
+### Applications Code Container #############################
+
+    applications:
+      image: tianon/true
+      env_file: .env
+      volumes:
+        - ${DOCKER_APPLICATION}:/var/www
+
+
+### Workspace Utilities Container ###########################
+    workspace:
+      build:
+        context: ./workspace
+        dockerfile: "Dockerfile${DOCKER_FILE_SUFFIX}"
+        args:
+          - PUID=${PUID}
+          - PGID=${PGID}
+        dockerfile: "Dockerfile"
+      volumes_from:
+        - applications
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
+      ports:
+        - "2222:22"
+      tty: true
+      networks:
+        - frontend
+        - backend
+
+
+### PHP-FPM Container #######################################
+
+    php-fpm:
+      build:
+        context: ./php-fpm
+        dockerfile: "Dockerfile${DOCKER_FILE_SUFFIX}"
+        args:
+          - PUID=${PUID}
+          - PGID=${PGID}
+      volumes_from:
+        - applications
+      volumes:
+        - ./php-fpm/php.ini:/usr/local/etc/php/php.ini
+      expose:
+        - "9000"
+      depends_on:
+        - workspace
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
+      environment:
+        - PHP_IDE_CONFIG=${DOCKER_PHP_IDE_CONFIG}
+      networks:
+        - backend
+
+### PHP Worker Container #####################################
+
+    php-worker:
+      build:
+        context: ./php-worker
+        dockerfile: "Dockerfile${DOCKER_FILE_SUFFIX}"
+        args:
+          - PUID=${PUID}
+          - PGID=${PGID}
+      volumes_from:
+        - applications
+      depends_on:
+        - workspace
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
+      networks:
+        - backend
+
+
+### NGINX Server Container ##################################
+
+    nginx:
+      build:
+        context: ./nginx
+        args:
+          - PHP_UPSTREAM_CONTAINER=php-fpm
+          - PHP_UPSTREAM_PORT=9000
+          - PUID=${PUID}
+          - PGID=${PGID}
+      volumes_from:
+        - applications
+      volumes:
+        - ${DOCKER_APPLICATION}/storage/logs/nginx/:/var/log/nginx
+        - ./nginx/sites/:/etc/nginx/sites-available
+      ports:
+        - "80:80"
+        - "443:443"
+        - "8080:80"
+      depends_on:
+        - php-fpm
+      networks:
+        - frontend
+        - backend
+
+
+### PostgreSQL Container ####################################
+
+    database:
+      build: ./postgres
+      environment:
+        - POSTGRES_DB=wellmax
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+      ports:
+        - "5433:5432"
+      networks:
+        - backend
+
+
+### Redis Container #########################################
+
+    redis:
+      build: ./redis
+      ports:
+        - "6379:6379"
+      networks:
+        - backend
+
+
+### RabbitMQ Container ######################################
+
+    rabbitmq:
+      build: ./rabbitmq
+      ports:
+        - "5672:5672"
+        - "15672:15672"
+        - "15671:15671"
+      privileged: true
+      environment:
+        - RABBITMQ_DEFAULT_USER=guest
+        - RABBITMQ_DEFAULT_PASS=guest
+        - RABBITMQ_DEFAULT_VHOST=/
+      depends_on:
+        - php-fpm
+      networks:
+        - backend
+
+
+### pgAdmin Container #######################################
+
+    pgadmin:
+      build: ./pgadmin
+      ports:
+        - "5050:5050"
+        - "8081:5050"
+      environment:
+        - DEFAULT_USER=postgres
+        - DEFAULT_PASSWORD=postgres
+      depends_on:
+        - database
+      networks:
+        - frontend
+        - backend
+
+
+### Selenium Container ########################################
+
+    selenium:
+      build: ./selenium
+      ports:
+        - "4444:4444"
+      volumes:
+        - /dev/shm:/dev/shm
+      networks:
+        - frontend
+
+### Networks Setup ############################################
+
+networks:
+  frontend:
+    driver: "bridge"
+  backend:
+    driver: "bridge"
+
+
+### Volumes Setup #############################################
+
+volumes:
+  databse:
+    driver: "local"
+  memcached:
+    driver: "local"
+  redis:
+    driver: "local"
+
