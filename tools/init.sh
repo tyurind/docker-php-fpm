@@ -19,6 +19,8 @@ echo "SUDO_GID: $SUDO_GID"
 # SUDO_USER=tyurin
 # SUDO_UID=1000
 
+# $GIT_DIR
+
 # I_UID=${SUDO_UID-$D_UID}
 # I_GID=${SUDO_GID-$D_GID}
 
@@ -28,4 +30,11 @@ I_GID=${SUDO_GID-`id -g`}
 USERWORK="${I_UID}:${I_GID}"
 
 echo $USERWORK
+#  -----------------
+
+
+# user: ${WUSERID%%:*}
+# group: ${WUSERID##*:}
+
+
 

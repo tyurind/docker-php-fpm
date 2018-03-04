@@ -5,7 +5,7 @@
 #
 
 # FROM gitlab.dev-ifc.com:4567/wellmax/app-image-for-build/images/php-worker:develop
-FROM gitlab.dev-ifc.com:4567/wellmax/app-image-for-build/images/php-fpm:develop
+FROM fobia/php-fpm:latest${IMAGE_TAG}
 
 
 ARG PUID=1000

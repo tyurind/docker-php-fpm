@@ -24,7 +24,7 @@ RUN mkdir -p /var/www
 
 
 COPY .      /bd_build
-ADD ./bin /usr/sbin
+ADD ./bin   /usr/sbin
 
 #####################################
 # Non-Root User:
@@ -32,7 +32,11 @@ ADD ./bin /usr/sbin
 USER root
 RUN add-apt-repository -y ppa:ondrej/php && \
     apt-get update -yqq && \
-    apt-get install -y sudo lsb-release
+    apt-get install -y \
+            sudo \
+            lsb-release \
+            mc \
+            iputils-ping
 
 
 # ARG PUID=1000
@@ -44,13 +48,16 @@ RUN add-apt-repository -y ppa:ondrej/php && \
 RUN groupadd -g 1000 workuser && \
     useradd -u 1000 -g workuser -m workuser && \
     mkdir -p /home/workuser && \
+    usermod -a -G sudo workuser && \
     cp /bd_build/aliases.sh /home/workuser/aliases.sh && \
     touch  /home/workuser/.bashrc && \
     echo "" >> /home/workuser/.bashrc && \
     echo "# Load Custom Aliases" >> /home/workuser/.bashrc && \
     echo "source /home/workuser/aliases.sh" >> /home/workuser/.bashrc && \
     echo "" >> /home/workuser/.bashrc && \
-    chown -R workuser:workuser /home/workuser
+    chown -R workuser:workuser /home/workuser && \
+    echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers && \
+    echo 'workuser:secret' | chpasswd
 
 #####################################
 # Set Timezone

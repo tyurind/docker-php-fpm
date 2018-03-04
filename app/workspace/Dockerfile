@@ -23,7 +23,7 @@ ARG PGID=1000
 ENV PUID ${PUID}
 ENV PGID ${PGID}
 
-# RUN /usr/sbin/enable_insecure_key
+RUN /usr/sbin/enable_insecure_key
 
 ## NEW CODE
 # RUN passwd -d laradock

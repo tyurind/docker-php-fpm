@@ -4,9 +4,9 @@
 ## Инициализация пользователя и его ID по умолчанию
 ##
 
-USER_WORKER=${USER_WORKER-www-data}
-PUID=${PUID-33}
-PGID=${PGID-33}
+USER_WORKER=${USER_WORKER-workuser}
+PUID=${PUID-1000}
+PGID=${PGID-1000}
 
 ## ID пользователя в системе
 ID=$(id -u $USER_WORKER 2>/dev/null)
