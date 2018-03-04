@@ -3,23 +3,21 @@ PUID=1000
 PGID=1000
 
 DOCKER_APPLICATION=.
-DOCKER_FILE_SUFFIX=
 # DATA_SAVE_PATH=./.laradock/data
 
 DOCKER_HOST_IP=10.0.75.1
 
-DOCKER_PORT_PREFIX=81
+DOCKER_PORT_PREFIX=18
 DOCKER_PHP_IDE_CONFIG=serverName=laradock
 COMPOSER_HOME=./storage/composer
 
 COMPOSE_PATH_SEPARATOR=:
-COMPOSE_FILE=docker-compose.yml:docker-compose.dev.yml
-
+COMPOSE_FILE=docker-compose.services.yml:_compose/ports.yml
 
 
 
 #DOCKER_PHP_IDE_CONFIG=serverName=laradock
-#COMPOSE_PROJECT_NAME=appdefaultimage
+#COMPOSE_PROJECT_NAME=appbase
 
 ## Compose CLI environment variables
 ##      COMPOSE_API_VERSION=

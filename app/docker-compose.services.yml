@@ -1,0 +1,137 @@
+version: '2'
+
+services:
+
+### Applications Code Container #############################
+
+    applications:
+      image: tianon/true
+      volumes:
+        - ${DOCKER_APPLICATION}:/var/www
+
+
+### Workspace Utilities Container ###########################
+    workspace:
+      build:
+        context: ./workspace
+        args:
+          - PUID=${PUID}
+          - PGID=${PGID}
+      volumes_from:
+        - applications
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
+      tty: true
+
+
+### PHP-FPM Container #######################################
+
+    php-fpm:
+      build:
+        context: ./php-fpm
+        args:
+          - PUID=${PUID}
+          - PGID=${PGID}
+      volumes_from:
+        - applications
+      volumes:
+        - ./php-fpm/php.ini:/usr/local/etc/php/php.ini
+      expose:
+        - "9000"
+      depends_on:
+        - workspace
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
+      environment:
+        - PHP_IDE_CONFIG=${DOCKER_PHP_IDE_CONFIG}
+
+### PHP Worker Container #####################################
+
+    php-worker:
+      build:
+        context: ./php-worker
+        args:
+          - PUID=${PUID}
+          - PGID=${PGID}
+      volumes_from:
+        - applications
+      depends_on:
+        - workspace
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
+
+
+### NGINX Server Container ##################################
+
+    nginx:
+      build:
+        context: ./nginx
+        args:
+          - PHP_UPSTREAM_CONTAINER=php-fpm
+          - PHP_UPSTREAM_PORT=9000
+          - PUID=${PUID}
+          - PGID=${PGID}
+      volumes_from:
+        - applications
+      volumes:
+        - ${DOCKER_APPLICATION}/storage/logs/nginx/:/var/log/nginx
+        - ./nginx/sites/:/etc/nginx/sites-available
+      depends_on:
+        - php-fpm
+
+
+### PostgreSQL Container ####################################
+
+    database:
+      build: ./postgres
+      environment:
+        - POSTGRES_DB=wellmax
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+
+
+### Redis Container #########################################
+
+    redis:
+      build: ./redis
+
+### RabbitMQ Container ######################################
+
+    rabbitmq:
+      build: ./rabbitmq
+      privileged: true
+      environment:
+        - RABBITMQ_DEFAULT_USER=guest
+        - RABBITMQ_DEFAULT_PASS=guest
+        - RABBITMQ_DEFAULT_VHOST=/
+      depends_on:
+        - php-fpm
+
+### pgAdmin Container #######################################
+
+    pgadmin:
+      build: ./pgadmin
+      environment:
+        - DEFAULT_USER=postgres
+        - DEFAULT_PASSWORD=postgres
+      depends_on:
+        - database
+
+### Selenium Container ########################################
+
+    selenium:
+      build: ./selenium
+      volumes:
+        - /dev/shm:/dev/shm
+
+
+### Volumes Setup #############################################
+
+volumes:
+  databse:
+    driver: "local"
+  pgadmin:
+    driver: "local"
+  redis:
+    driver: "local"
+

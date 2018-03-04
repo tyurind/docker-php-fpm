@@ -3,8 +3,6 @@
 # Image Setup
 #--------------------------------------------------------------------------
 #
-
-# FROM gitlab.dev-ifc.com:4567/wellmax/app-image-for-build/images/php-worker:develop
 FROM fobia/php-fpm:latest${IMAGE_TAG}
 
 

@@ -47,7 +47,12 @@ User gid: $SGID
 "
 
 
-
+# RUN useradd seluser \
+         # --shell /bin/bash  \
+         # --create-home \
+  # && usermod -a -G sudo seluser \
+  # && echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers \
+  # && echo 'seluser:secret' | chpasswd
 
 # USER_WORKER=${USER_WORKER-www-data}
 # PUID=${PUID-33}

@@ -1,0 +1,76 @@
+version: '2'
+
+
+
+services:
+
+### Workspace Utilities Container ###########################
+    workspace:
+      networks:
+        - frontend
+        - backend
+
+
+### PHP-FPM Container #######################################
+
+    php-fpm:
+      networks:
+        - backend
+
+### PHP Worker Container #####################################
+
+    php-worker:
+      networks:
+        - backend
+
+
+### NGINX Server Container ##################################
+
+    nginx:
+      networks:
+        - frontend
+        - backend
+
+
+### PostgreSQL Container ####################################
+
+    database:
+      networks:
+        - backend
+
+
+### Redis Container #########################################
+
+    redis:
+      networks:
+        - backend
+
+
+### RabbitMQ Container ######################################
+
+    rabbitmq:
+      networks:
+        - backend
+
+
+### pgAdmin Container #######################################
+
+    pgadmin:
+      networks:
+        - frontend
+        - backend
+
+
+### Selenium Container ########################################
+
+    selenium:
+      networks:
+        - frontend
+
+### Networks Setup ############################################
+
+networks:
+  frontend:
+    driver: "bridge"
+  backend:
+    driver: "bridge"
