@@ -65,6 +65,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     f.vmx['displayName'] = 'baseimage-docker'
   end
 
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "3048"
+    #vb.cpus = 2
+  end
+
+
   if Dir.glob("#{File.dirname(__FILE__)}/.vagrant/machines/default/*/id").empty?
     config.vm.provision :shell, :inline => $script
   end

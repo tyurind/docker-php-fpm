@@ -10,4 +10,6 @@ FROM fenglc/pgadmin4
 #	tar xzf /tmp/pgadmin.db.tar.gz -O > /var/lib/pgadmin/pgadmin4.db && \
 #	rm -rf /tmp/pgadmin.db.tar.gz
 
+VOLUME /var/lib/pgadmin
+
 EXPOSE 5050

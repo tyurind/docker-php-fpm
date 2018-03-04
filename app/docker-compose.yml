@@ -39,7 +39,7 @@ services:
     php-fpm:
       build:
         context: ./php-fpm
-        dockerfile: "Dockerfile${DOCKER_FILE_SUFFIX}"
+        dockerfile: "Dockerfile"
         args:
           - PUID=${PUID}
           - PGID=${PGID}
@@ -187,6 +187,8 @@ networks:
 
 volumes:
   databse:
+    driver: "local"
+  pgadmin:
     driver: "local"
   memcached:
     driver: "local"
