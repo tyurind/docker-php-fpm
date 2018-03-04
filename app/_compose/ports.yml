@@ -1,0 +1,51 @@
+version: '2'
+
+services:
+### Workspace Utilities Container ###########################
+    workspace:
+      ports:
+        - "${DOCKER_PORT_PREFIX}22:22"
+
+### NGINX Server Container ##################################
+
+    nginx:
+      ports:
+        - "${DOCKER_PORT_PREFIX}80:80"
+        - "${DOCKER_PORT_PREFIX}443:443"
+
+
+### PostgreSQL Container ####################################
+
+    database:
+      ports:
+        - "${DOCKER_PORT_PREFIX}432:5432"
+
+
+### Redis Container #########################################
+
+    redis:
+      ports:
+        - "${DOCKER_PORT_PREFIX}79:6379"
+
+### RabbitMQ Container ######################################
+
+    rabbitmq:
+      ports:
+        - "${DOCKER_PORT_PREFIX}672:5672"
+        - "${DOCKER_PORT_PREFIX}673:15672"
+        - "${DOCKER_PORT_PREFIX}671:15671"
+
+### pgAdmin Container #######################################
+
+    pgadmin:
+      ports:
+        - "${DOCKER_PORT_PREFIX}50:5050"
+        - "${DOCKER_PORT_PREFIX}81:5050"
+
+
+### Selenium Container ########################################
+
+    selenium:
+      ports:
+        - "${DOCKER_PORT_PREFIX}44:4444"
+

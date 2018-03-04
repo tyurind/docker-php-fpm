@@ -8,7 +8,7 @@ services:
 
     applications:
       image: tianon/true
-      env_file: .env
+      # env_file: .env
       volumes:
         - ${DOCKER_APPLICATION}:/var/www
 
@@ -20,13 +20,10 @@ services:
         args:
           - PUID=${PUID}
           - PGID=${PGID}
-        dockerfile: "Dockerfile"
       volumes_from:
         - applications
       extra_hosts:
         - "dockerhost:${DOCKER_HOST_IP}"
-      ports:
-        - "2222:22"
       tty: true
       networks:
         - frontend
@@ -89,10 +86,6 @@ services:
       volumes:
         - ${DOCKER_APPLICATION}/storage/logs/nginx/:/var/log/nginx
         - ./nginx/sites/:/etc/nginx/sites-available
-      ports:
-        - "80:80"
-        - "443:443"
-        - "8080:80"
       depends_on:
         - php-fpm
       networks:
@@ -108,8 +101,6 @@ services:
         - POSTGRES_DB=wellmax
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
-      ports:
-        - "5433:5432"
       networks:
         - backend
 
@@ -118,8 +109,6 @@ services:
 
     redis:
       build: ./redis
-      ports:
-        - "6379:6379"
       networks:
         - backend
 
@@ -128,10 +117,6 @@ services:
 
     rabbitmq:
       build: ./rabbitmq
-      ports:
-        - "5672:5672"
-        - "15672:15672"
-        - "15671:15671"
       privileged: true
       environment:
         - RABBITMQ_DEFAULT_USER=guest
@@ -147,9 +132,6 @@ services:
 
     pgadmin:
       build: ./pgadmin
-      ports:
-        - "5050:5050"
-        - "8081:5050"
       environment:
         - DEFAULT_USER=postgres
         - DEFAULT_PASSWORD=postgres
@@ -164,8 +146,6 @@ services:
 
     selenium:
       build: ./selenium
-      ports:
-        - "4444:4444"
       volumes:
         - /dev/shm:/dev/shm
       networks:
