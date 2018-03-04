@@ -10,7 +10,9 @@
 ARGS=1
 if [ $# -lt "$ARGS" ]
 then
-    echo "Usage: `basename $0` <user> [uid] [gid]"
+    # echo "Usage: `basename $0` <user> [uid] [gid]"
+    echo "Usage: `basename $0` <WUSERID> [gid] [workuser]"
+    echo "    WUSERID <string>     format: <uid>[:<gid>]"
     echo;
     exit 1;
 fi
@@ -86,3 +88,30 @@ User gid: $SGID
 #         fi
 #     fi
 # fi
+
+USER_WORKER=${USER_WORKER-www-data}
+if [ "$1" != "" ]; then
+  USER_WORKER=$1
+fi
+
+ID=$(id -u $USER_WORKER 2>/dev/null)
+if [ -z "$ID" ]; then
+  # пользователя нет, то создадим
+  # adduser --system --shell /bin/bash --no-create-home --uid ${PUID} --disabled-password $USER_WORKER  2>/dev/null
+  echo "Invalid user: $USER_WORKER"
+  echo;
+  exit 1;
+else
+
+PUID=${PUID-33}
+PGID=${PGID-33}
+#     if [ "$PUID" != "33" ]; then
+#         # если пользователя уже есть, установим UID и GID из переменных окружения
+#         if [ $(id -u $USER_WORKER) != "${PUID}" ]; then
+#             usermod -u ${PUID} $USER_WORKER 2>/dev/null
+#         fi
+
+#         if [ $(id -g $USER_WORKER) != "${PGID}" ]; then
+#             groupmod -g ${PGID} $USER_WORKER 2>/dev/null
+#         fi
+#     fi

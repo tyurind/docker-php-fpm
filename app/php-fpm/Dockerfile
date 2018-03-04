@@ -27,7 +27,7 @@ RUN if [ -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ]; then \
 
 RUN usermod -u ${PUID} www-data >/dev/null 2>&1
 RUN groupmod -g ${PGID} www-data >/dev/null 2>&1
-# RUN /usr/sbin/init-user-work.sh 2>/dev/null
+# RUN /usr/sbin/init-user-work.sh www-data 2>/dev/null
 
 WORKDIR /var/www
 

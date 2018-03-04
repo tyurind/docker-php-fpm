@@ -1,5 +1,22 @@
 #!/bin/bash
 
+function help_long()
+{
+        cat <<EOF
+Init docker compose configuration.
+
+USAGE:
+docker-app-init <GIT_DIR> <DOCKER_APP_DIR>
+
+    GIT_DIR           local path project or url git repository
+    DOCKER_APP_DIR    storage docker images
+
+EOF
+
+        return
+}
+
+
 D_UID=$(id -u)
 D_GID=$(id -g)
 

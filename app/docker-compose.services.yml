@@ -47,18 +47,18 @@ services:
 
 ### PHP Worker Container #####################################
 
-    php-worker:
-      build:
-        context: ./php-worker
-        args:
-          - PUID=${PUID}
-          - PGID=${PGID}
-      volumes_from:
-        - applications
-      depends_on:
-        - workspace
-      extra_hosts:
-        - "dockerhost:${DOCKER_HOST_IP}"
+    # php-worker:
+    #   build:
+    #     context: ./php-worker
+    #     args:
+    #       - PUID=${PUID}
+    #       - PGID=${PGID}
+    #   volumes_from:
+    #     - applications
+    #   depends_on:
+    #     - workspace
+    #   extra_hosts:
+    #     - "dockerhost:${DOCKER_HOST_IP}"
 
 
 ### NGINX Server Container ##################################

@@ -12,13 +12,10 @@ ARG PGID=1000
 ENV PUID ${PUID}
 ENV PGID ${PGID}
 
-RUN apt-get update -yqq && \
-    apt-get install -y \
-        python-setuptools \
-        supervisor
-RUN apt-get autoremove -y
+RUN install_clean python-setuptools supervisor
 
 RUN usermod -u ${PUID} www-data
+# RUN /usr/sbin/init-user-work.sh www-data 2>/dev/null
 
 COPY supervisord.conf /etc/supervisord.conf
 
