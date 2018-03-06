@@ -2,17 +2,17 @@
 
 docker-rmi-grep()
 {
-    docker image ls | grep $* | awk '{print $3}' | while read i; do docker rmi -f $i; done
+    docker image ls | tail -n +2 | grep $* | awk '{print $3}' | while read i; do docker rmi -f $i; done
 }
 
 docker-kill-grep()
 {
-    docker ps | grep $* | awk '{print $1}' | while read i; do docker kill $i; done
+    docker ps | tail -n +2 | grep $* | awk '{print $1}' | while read i; do docker kill $i; done
 }
 
 docker-rm-grep()
 {
-    docker ps -a | grep $* | awk '{print $1}' | while read i; do docker rm -f $i; done
+    docker ps -a | tail -n +2 | grep $* | awk '{print $1}' | while read i; do docker rm -f $i; done
 }
 
 dockerip ()

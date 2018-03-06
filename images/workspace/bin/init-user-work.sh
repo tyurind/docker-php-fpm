@@ -30,24 +30,33 @@ workusermod()
 
     USERUID=${2:-$PUID}
 
-    SET_PUID=${USERUID%%:*}
-    SET_PGID=${USERUID##*:}
+    #SET_PUID=${USERUID%%:*}
+    #SET_PGID=${USERUID##*:}
+    SET_PUID=$(echo ":${USERUID}" | cut -d ":" -f 2)
+    SET_PGID=$(echo ":${USERUID}" | cut -d ":" -f 3)
 
     if [ "$3" != "" ]; then
         SET_PGID=$3
     fi
     SET_PGID=${SET_PGID-:$PGID}
 
-    if [ "$SET_PUID" -gt  "1" ]; then
-        if [ $(id -u $USER_WORKER) != "${SET_PUID}" ]; then
-            usermod -u ${SET_PUID} $USER_WORKER 2>/dev/null
+
+    if [ "$SET_PUID" = "" ]; then SET_PUID=0; fi
+    if [ "$SET_PGID" = "" ]; then SET_PGID=0; fi
+
+    if [ "$(which usermod)" != "" ]; then
+        if [ "$SET_PUID" -gt  "1" ]; then
+            if [ $(id -u $USER_WORKER) != "${SET_PUID}" ]; then
+                usermod -u ${SET_PUID} $USER_WORKER 2>/dev/null
+            fi
         fi
     fi
 
-
-    if [ "$SET_PGID" -gt  "1" ]; then
-        if [ $(id -g $USER_WORKER) != "${SET_PGID}" ]; then
-            groupmod -g ${SET_PGID} $USER_WORKER 2>/dev/null
+    if [ "$(which groupmod)" != "" ]; then
+        if [ "$SET_PGID" -gt  "1" ]; then
+            if [ $(id -g $USER_WORKER) != "${SET_PGID}" ]; then
+                groupmod -g ${SET_PGID} $USER_WORKER 2>/dev/null
+            fi
         fi
     fi
 }

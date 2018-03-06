@@ -12,11 +12,8 @@
 # Note: Base Image name format {image-tag}-{php-version}
 #
 
-FROM fobia/php-fpm:71-work-dev
+FROM fobia/php-fpm:workspace-dev
 USER root
-
-# Remove Faillog and Lastlog to reduce the size of the final image.
-RUN rm -f /var/log/lastlog /var/log/faillog
 
 ARG PUID=1000
 ARG PGID=1000
@@ -24,42 +21,17 @@ ARG PGID=1000
 ENV PUID ${PUID}
 ENV PGID ${PGID}
 
-RUN /usr/sbin/enable_insecure_key
-#RUN /usr/sbin/init-user-work.sh www-data 2>/dev/null
+# Remove Faillog and Lastlog to reduce the size of the final image.
+RUN rm -f /var/log/lastlog /var/log/faillog
 
-## NEW CODE
+RUN /usr/sbin/init-user-work.sh workuser 2>/dev/null && \
+    chown -R workuser:workuser /home/workuser/
 # RUN passwd -d laradock
-# COPY ./ssh_config /etc/ssh/ssh_config
-# COPY ./sshd_config /etc/ssh/sshd_config
-# RUN cp -r /root/.ssh /home/laradock/.ssh && \
-#     chown -R laradock:laradock /home/laradock/.ssh
-#####################################
-
-# RUN sed -i 's@^#includedir /etc/sudoers.d@includedir /etc/sudoers.d@g' /etc/sudoers && \
-RUN passwd -d workuser && \
-    echo "" >> /etc/sudoers && \
-    echo "workuser ALL=(ALL) NOPASSWD:/sbin/my_init" >> /etc/sudoers && \
-    # echo "workuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
-    echo "" >> /etc/sudoers \
-    && echo "" >> /etc/ssh/sshd_config \
-    && echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config \
-    && echo "PermitEmptyPasswords yes" >> /etc/ssh/sshd_config \
-    && echo "" >> /etc/ssh/sshd_config
-
 
 # Clean up
-RUN apt-get autoremove -y \
-    && apt-get autoclean -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /tmp/* /var/tmp/*
-
-
+RUN /usr/sbin/install_clean
 # Set default work directory
-
-
 WORKDIR /var/www
 
 USER workuser
 CMD ["sudo", "/sbin/my_init"]
-
