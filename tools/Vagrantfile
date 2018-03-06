@@ -17,7 +17,7 @@ BASE_BOX_URL          = ENV['BASE_BOX_URL']    || 'https://oss-binaries.phusionp
 VAGRANT_BOX_URL       = ENV['VAGRANT_BOX_URL'] || BASE_BOX_URL + 'ubuntu-14.04-amd64-vbox.box'
 VMWARE_BOX_URL        = ENV['VMWARE_BOX_URL']  || BASE_BOX_URL + 'ubuntu-14.04-amd64-vmwarefusion.box'
 BASEIMAGE_PATH        = ENV['BASEIMAGE_PATH' ] || '../images'
-PASSENGER_DOCKER_PATH = ENV['PASSENGER_PATH' ] || '../passenger-docker'
+PASSENGER_DOCKER_PATH = ENV['PASSENGER_PATH' ] || '../app'
 DOCKERIZER_PATH       = ENV['DOCKERIZER_PATH'] || '../dockerizer'
 
 $script = <<SCRIPT
@@ -35,6 +35,15 @@ sh get-docker.sh
 usermod -a -G docker vagrant
 docker version
 su - vagrant -c 'echo alias d=docker >> ~/.bash_aliases'
+
+
+curl -L https://github.com/docker/machine/releases/download/v0.13.0/docker-machine-`uname -s`-`uname -m` -o /usr/local/bin/docker-machine
+chmod +x /usr/local/bin/docker-machine
+docker-machine version
+
+curl -L https://github.com/docker/compose/releases/download/1.17.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+docker-compose --version
 
 SCRIPT
 

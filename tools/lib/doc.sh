@@ -48,10 +48,32 @@ xdebug_status ()
 
 
 cd "$DIR"
-read_ini ../../app/default.ini srv1
+read_ini ../../app/default.ini ""
+# read_ini ../../app/env
 # echo $INI__ALL_VARS
 
-export DOCKER_PORT_PREFIX=$INI__srv1__DOCKER_PORT_PREFIX
-export COMPOSE_PROJECT_NAME=$INI__srv1__COMPOSE_PROJECT_NAME
+# export DOCKER_PORT_PREFIX=$INI__srv1__DOCKER_PORT_PREFIX
+# export COMPOSE_PROJECT_NAME=$INI__srv1__COMPOSE_PROJECT_NAME
 
-env
+# env
+
+# echo ${INI__ALL_VARS}
+
+for i in $INI__ALL_VARS; do
+    ii=$(echo $i | sed '/INI__.*__.*/d')
+    if [ "$ii" == "" ]; then
+        continue
+    fi
+
+    # echo ${USERID##*:}
+    # if [ $i == INI__* ]; then
+        # echo "VAR: $i = ${!i}"
+
+        # echo "${i#INI__}=${!i}"
+        eval "${i#INI__}=${!i}"
+    # fi
+    # echo "VAR: $i            $ii"
+    # echo "VAR: $i            ${i#INI__*__}"
+done
+
+echo $COMPOSE_PROJECT_NAME

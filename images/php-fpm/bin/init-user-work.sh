@@ -30,13 +30,19 @@ workusermod()
 
     USERUID=${2:-$PUID}
 
-    SET_PUID=${USERUID%%:*}
-    SET_PGID=${USERUID##*:}
+    #SET_PUID=${USERUID%%:*}
+    #SET_PGID=${USERUID##*:}
+    SET_PUID=$(echo ":${USERUID}" | cut -d ":" -f 2)
+    SET_PGID=$(echo ":${USERUID}" | cut -d ":" -f 3)
 
     if [ "$3" != "" ]; then
         SET_PGID=$3
     fi
     SET_PGID=${SET_PGID-:$PGID}
+
+
+    if [ "$SET_PUID" = "" ]; then SET_PUID=0; fi
+    if [ "$SET_PGID" = "" ]; then SET_PGID=0; fi
 
     if [ "$(which usermod)" != "" ]; then
         if [ "$SET_PUID" -gt  "1" ]; then

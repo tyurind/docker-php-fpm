@@ -12,3 +12,6 @@ npm-debug.log
 ~*
 *.sublime-project
 *.sublime-workspace
+
+app/storage/
+app/.env
