@@ -1,16 +1,19 @@
 FROM nginx:alpine
+# ----------------
 
-#####################################
-# Non-Root User:
-#####################################
+ARG PUID=1000
+ARG PGID=1000
 
-# Add a non-root user to prevent files being created with root permissions on host machine.
+ENV PUID ${PUID}
+ENV PGID ${PGID}
+
 ADD nginx.conf /etc/nginx/
 
+# Add a non-root user to prevent files being created with root permissions on host machine.
 RUN apk update \
     && apk upgrade \
     && apk add --no-cache bash \
-    && adduser -D -H -u 1000 -s /bin/bash www-data
+    && adduser -D -H -u ${PUID} -s /bin/bash www-data
 
 
 ARG PHP_UPSTREAM_CONTAINER=php-fpm

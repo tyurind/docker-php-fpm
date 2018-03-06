@@ -25,8 +25,9 @@ ENV PGID ${PGID}
 RUN rm -f /var/log/lastlog /var/log/faillog
 
 RUN /usr/sbin/init-user-work.sh workuser 2>/dev/null && \
+    usermod -s /bin/bash workuser && \
     chown -R workuser:workuser /home/workuser/
-# RUN passwd -d laradock
+RUN passwd -d laradock
 
 # Clean up
 RUN /usr/sbin/install_clean

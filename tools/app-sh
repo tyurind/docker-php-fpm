@@ -70,13 +70,14 @@ __clear_color()
 
 # if [[ -x /sbin/tput ]]; then echo "ok"; fi
 
-__clear_color
+# __clear_color
 
 PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\e[31;01m\]\u\[\e[0m\]@\h:\w\$ '
 
 # echo -e " \033[00m \033[07;30m "
 # echo;
 echo "${bg}${yellow}red text"
+# printf -b "${bg}${yellow}red text"
 
 # develop!docker-php-fpm/tools *>
 # /etc/terminfo
