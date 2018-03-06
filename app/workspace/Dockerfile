@@ -13,6 +13,7 @@
 #
 
 FROM fobia/php-fpm:71-work-dev
+USER root
 
 # Remove Faillog and Lastlog to reduce the size of the final image.
 RUN rm -f /var/log/lastlog /var/log/faillog
@@ -24,7 +25,7 @@ ENV PUID ${PUID}
 ENV PGID ${PGID}
 
 RUN /usr/sbin/enable_insecure_key
-RUN /usr/sbin/init-user-work.sh www-data 2>/dev/null
+#RUN /usr/sbin/init-user-work.sh www-data 2>/dev/null
 
 ## NEW CODE
 # RUN passwd -d laradock
@@ -34,6 +35,12 @@ RUN /usr/sbin/init-user-work.sh www-data 2>/dev/null
 #     chown -R laradock:laradock /home/laradock/.ssh
 #####################################
 
+# RUN sed -i 's@^#includedir /etc/sudoers.d@includedir /etc/sudoers.d@g' /etc/sudoers && \
+RUN passwd -d workuser && \
+    echo "" >> /etc/sudoers && \
+    echo "workuser ALL=(ALL) NOPASSWD:/sbin/my_init" >> /etc/sudoers && \
+    # echo "workuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    echo "" >> /etc/sudoers
 
 # Clean up
 RUN apt-get autoremove -y \
@@ -44,5 +51,10 @@ RUN apt-get autoremove -y \
 
 
 # Set default work directory
+
+
 WORKDIR /var/www
+
+USER workuser
+CMD ["sudo", "/sbin/my_init"]
 

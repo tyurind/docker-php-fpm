@@ -29,6 +29,8 @@ RUN usermod -u ${PUID} www-data >/dev/null 2>&1
 RUN groupmod -g ${PGID} www-data >/dev/null 2>&1
 # RUN /usr/sbin/init-user-work.sh www-data 2>/dev/null
 
+USER www-data
+
 WORKDIR /var/www
 
 CMD ["php-fpm"]
