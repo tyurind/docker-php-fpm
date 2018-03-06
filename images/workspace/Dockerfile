@@ -192,6 +192,28 @@ RUN add-apt-repository ppa:ondrej/php \
   && mv chromedriver /usr/local/bin/ \
   && rm chromedriver_linux64.zip
 
+#-----------------------------
+
+RUN /usr/sbin/enable_insecure_key
+#RUN /usr/sbin/init-user-work.sh www-data 2>/dev/null
+RUN echo "" >> /etc/sudoers && \
+    echo "workuser ALL=(ALL) NOPASSWD:/sbin/my_init" >> /etc/sudoers && \
+    # echo "workuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    echo "" >> /etc/sudoers \
+    && echo "" >> /etc/ssh/sshd_config \
+    && echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config \
+    && echo "PermitEmptyPasswords yes" >> /etc/ssh/sshd_config \
+    && echo "" >> /etc/ssh/sshd_config
+
+
+## NEW CODE
+# RUN passwd -d laradock
+# COPY ./ssh_config /etc/ssh/ssh_config
+# COPY ./sshd_config /etc/ssh/sshd_config
+RUN cp -r /root/.ssh /home/workuser/.ssh && \
+    chown -R workuser:workuser /home/workuser/.ssh
+#####################################
+
 #
 #--------------------------------------------------------------------------
 # Clear code
