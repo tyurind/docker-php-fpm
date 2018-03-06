@@ -40,7 +40,12 @@ RUN passwd -d workuser && \
     echo "" >> /etc/sudoers && \
     echo "workuser ALL=(ALL) NOPASSWD:/sbin/my_init" >> /etc/sudoers && \
     # echo "workuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
-    echo "" >> /etc/sudoers
+    echo "" >> /etc/sudoers \
+    && echo "" >> /etc/ssh/sshd_config \
+    && echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config \
+    && echo "PermitEmptyPasswords yes" >> /etc/ssh/sshd_config \
+    && echo "" >> /etc/ssh/sshd_config
+
 
 # Clean up
 RUN apt-get autoremove -y \
