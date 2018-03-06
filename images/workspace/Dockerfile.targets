@@ -1,0 +1,194 @@
+#
+#--------------------------------------------------------------------------
+# Image Setup
+# $REF: $
+#--------------------------------------------------------------------------
+#
+# To edit the 'workspace' base Image, visit its repository on Github
+#    https://github.com/Laradock/workspace
+#
+# Базовый контейне
+#   See: https://github.com/phusion/baseimage-docker
+#
+# FROM laradock/workspace
+#   See: https://github.com/laradock/workspace/blob/master/Dockerfile-71
+#
+
+FROM tmp/workspace:system AS build-php
+
+USER root
+
+# Remove Faillog and Lastlog to reduce the size of the final image.
+RUN rm -rf /var/log/lastlog /var/log/faillog && \
+    apt-get update -qqy
+
+#
+#--------------------------------------------------------------------------
+# PHP Installation
+#--------------------------------------------------------------------------
+#
+
+#####################################
+# SOAP:
+#####################################
+RUN apt-get -y install libxml2-dev php7.1-soap && \
+    apt-get install -y libldap2-dev && \
+    apt-get install -y php7.1-ldap  && \
+    apt-get install -y php7.1-imap
+
+#####################################
+# xDebug:
+#####################################
+RUN pecl update-channels
+
+RUN apt-get install -y php7.1-xdebug && \
+    sed -i 's/^;//g' /etc/php/7.1/cli/conf.d/20-xdebug.ini
+# ADD for REMOTE debugging
+COPY ./xdebug.ini /etc/php/7.1/cli/conf.d/xdebug.ini
+
+
+#####################################
+# AMQP:
+#####################################
+RUN apt-get install librabbitmq-dev -y && \
+    # Install the mongodb extension
+    pecl -q install amqp && \
+    echo "extension=amqp.so" >> /etc/php/7.1/mods-available/amqp.ini && \
+    ln -s /etc/php/7.1/mods-available/amqp.ini /etc/php/7.1/cli/conf.d/30-amqp.ini
+
+#####################################
+# PHP REDIS EXTENSION FOR PHP 7.1
+#####################################
+RUN printf "\n" | pecl -q install -o -f redis && \
+    echo "extension=redis.so" >> /etc/php/7.1/mods-available/redis.ini && \
+    phpenmod redis
+
+#####################################
+# Swoole EXTENSION FOR PHP 7
+#####################################
+RUN pecl -q install swoole && \
+    echo "extension=swoole.so" >> /etc/php/7.1/mods-available/swoole.ini && \
+    ln -s /etc/php/7.1/mods-available/swoole.ini /etc/php/7.1/cli/conf.d/20-swoole.ini
+
+RUN curl -s http://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer
+
+#####################################
+# PYTHON:
+#####################################
+RUN apt-get -y install python python-pip python-dev build-essential  \
+  && pip install --upgrade pip  \
+  && pip install --upgrade virtualenv
+
+
+#####################################
+# pgsql client
+#####################################
+RUN curl -L https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
+    sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
+    apt-get update -yqq && \
+    apt-get install -y postgresql-client
+
+RUN install_clean
+#=========================================================================
+
+#
+#--------------------------------------------------------------------------
+# PHP Installation
+#--------------------------------------------------------------------------
+#
+FROM tmp/workspace:php AS build-chrome
+
+USER root
+
+# Remove Faillog and Lastlog to reduce the size of the final image.
+RUN rm -rf /var/log/lastlog /var/log/faillog && \
+    apt-get update -qqy
+
+#####################################
+# Dusk Dependencies:
+#####################################
+ARG CHROME_DRIVER_VERSION=2.32
+ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
+RUN add-apt-repository ppa:ondrej/php \
+  && apt-get update \
+  && apt-get -y install zip wget unzip xdg-utils \
+    libxpm4 libxrender1 libgtk2.0-0 libnss3 libgconf-2-4 xvfb \
+    gtk2-engines-pixbuf xfonts-cyrillic xfonts-100dpi xfonts-75dpi \
+    xfonts-base xfonts-scalable x11-apps \
+  && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+  && dpkg -i --force-depends google-chrome-stable_current_amd64.deb \
+  && apt-get -y -f install \
+  && dpkg -i --force-depends google-chrome-stable_current_amd64.deb \
+  && rm google-chrome-stable_current_amd64.deb \
+  && wget https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip \
+  && unzip chromedriver_linux64.zip \
+  && mv chromedriver /usr/local/bin/ \
+  && rm chromedriver_linux64.zip
+
+#-----------------------------
+
+RUN install_clean
+#=========================================================================
+
+
+
+
+FROM tmp/workspace:chrome AS build-ssh
+
+USER root
+
+# Remove Faillog and Lastlog to reduce the size of the final image.
+RUN rm -rf /var/log/lastlog /var/log/faillog && \
+    apt-get update -qqy
+
+#####################################
+# ssh:
+#####################################
+ARG INSTALL_WORKSPACE_SSH=true
+ENV INSTALL_WORKSPACE_SSH ${INSTALL_WORKSPACE_SSH}
+
+ADD insecure_id_rsa /tmp/id_rsa
+ADD insecure_id_rsa.pub /tmp/id_rsa.pub
+
+RUN if [ ${INSTALL_WORKSPACE_SSH} = true ]; then \
+    # rm -f /etc/service/sshd/down && \
+    cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys \
+        && cat /tmp/id_rsa.pub >> /root/.ssh/id_rsa.pub \
+        && cat /tmp/id_rsa >> /root/.ssh/id_rsa \
+        && rm -f /tmp/id_rsa* \
+        && chmod 644 /root/.ssh/authorized_keys /root/.ssh/id_rsa.pub \
+    && chmod 400 /root/.ssh/id_rsa \
+;fi
+
+RUN /usr/sbin/enable_insecure_key
+RUN touch /etc/service/sshd/down
+
+# RUN /usr/sbin/init-user-work.sh www-data 2>/dev/null
+RUN echo "" >> /etc/sudoers && \
+    echo "workuser ALL=(ALL) NOPASSWD:/sbin/my_init" >> /etc/sudoers && \
+    # echo "workuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    echo "" >> /etc/sudoers \
+    && echo "" >> /etc/ssh/sshd_config \
+    && echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config \
+    && echo "PermitEmptyPasswords yes" >> /etc/ssh/sshd_config \
+    && echo "" >> /etc/ssh/sshd_config
+
+RUN cp -r /root/.ssh /home/workuser/.ssh && \
+    chown -R workuser:workuser /home/workuser/.ssh
+#####################################
+
+#
+#--------------------------------------------------------------------------
+# Clear code
+#--------------------------------------------------------------------------
+#
+
+RUN install_clean
+
+# Set default work directory
+WORKDIR /var/www
+
+# USER workuser
+
+CMD ["sudo", "/sbin/my_init"]

@@ -1,0 +1,80 @@
+#
+#--------------------------------------------------------------------------
+# Image Setup
+# $REF: $
+#--------------------------------------------------------------------------
+#
+# To edit the 'workspace' base Image, visit its repository on Github
+#    https://github.com/Laradock/workspace
+#
+# Базовый контейне
+#   See: https://github.com/phusion/baseimage-docker
+#
+# FROM laradock/workspace
+#   See: https://github.com/laradock/workspace/blob/master/Dockerfile-71
+#
+
+FROM laradock/workspace:2.0-71
+
+
+# Remove Faillog and Lastlog to reduce the size of the final image.
+RUN rm -rf /var/log/lastlog /var/log/faillog
+RUN mkdir -p /var/www
+
+#
+#--------------------------------------------------------------------------
+# Mandatory Software's Installation
+#--------------------------------------------------------------------------
+#
+# Mandatory Software's such as ("php7.1-cli", "git", "vim", ....) are
+# installed on the base image 'laradock/workspace' image. If you want
+# to add more Software's or remove existing one, you need to edit the
+# base image (https://github.com/Laradock/workspace).
+#
+
+
+COPY .      /bd_build
+ADD ./bin   /usr/sbin
+
+#####################################
+# Non-Root User:
+#####################################
+USER root
+RUN add-apt-repository -y ppa:ondrej/php && \
+    apt-get update -yqq && \
+    apt-get install -y \
+            sudo \
+            lsb-release \
+            mc \
+            iputils-ping
+
+ENV PUID 1000
+ENV PGID 1000
+
+RUN groupadd -g 1000 workuser && \
+    useradd -u 1000 -g workuser -m workuser && \
+    mkdir -p /home/workuser && \
+    usermod -a -G sudo workuser && \
+    usermod -s /bin/bash workuser && \
+    cp /bd_build/aliases.sh /home/workuser/aliases.sh && \
+    touch  /home/workuser/.bashrc && \
+    echo "" >> /home/workuser/.bashrc && \
+    echo "# Load Custom Aliases" >> /home/workuser/.bashrc && \
+    echo "source /home/workuser/aliases.sh" >> /home/workuser/.bashrc && \
+    echo "" >> /home/workuser/.bashrc && \
+    chown -R workuser:workuser /home/workuser && \
+    echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers && \
+    echo 'workuser:secret' | chpasswd
+
+#####################################
+# Set Timezone
+#####################################
+
+ARG TZ=UTC
+ENV TZ ${TZ}
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Crontab
+RUN rm -rf /etc/cron.d/*
+
+RUN install_clean

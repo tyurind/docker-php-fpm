@@ -6,11 +6,13 @@ DIR=$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
 
 cd "${DIR}/workspace"
 
-IMAGE_BASE_TAG="workspace:step"
+# IMAGE_BASE_TAG="workspace:step"
 
-# docker build -t "${IMAGE_BASE_TAG}-1" -f Dockerfile-0 .
-docker build -t "${IMAGE_BASE_TAG}-2" -f Dockerfile-1 .
-docker build -t "${IMAGE_BASE_TAG}-3" -f Dockerfile-2 .
+docker build -f Dockerfile.system  -t "tmp/workspace:system" .
+docker build -f Dockerfile.targets -t "tmp/workspace:php"    --target "build-php" .
+docker build -f Dockerfile.targets -t "tmp/workspace:chrome" --target "build-chrome" .
+docker build -f Dockerfile.targets -t "tmp/workspace:ssh"    --target "build-ssh" .
+
 
 exit 0
 
