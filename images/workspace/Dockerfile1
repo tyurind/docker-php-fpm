@@ -12,7 +12,7 @@ USER root
 RUN rm -f /var/log/lastlog /var/log/faillog && \
     touch /etc/service/sshd/down && \
     usermod -s /bin/bash workuser && \
-    passwd -d laradock
+    passwd -d workuser
 
 # Clean up
 RUN /usr/sbin/install_clean
