@@ -1,6 +1,7 @@
 #
 #--------------------------------------------------------------------------
 # Image Setup
+# $REF: $
 #--------------------------------------------------------------------------
 #
 # To edit the 'php-fpm' base Image, visit its repository on Github
@@ -66,6 +67,7 @@ RUN docker-php-ext-install pgsql
 #####################################
 RUN apt-get install -y php5-xdebug && \
     echo "zend_extension=/usr/lib/php5/20131226/xdebug.so" > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+RUN sed -i 's/^zend_extension=/;zend_extension=/g' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 # Copy xdebug configration for remote debugging
 # COPY ./xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
