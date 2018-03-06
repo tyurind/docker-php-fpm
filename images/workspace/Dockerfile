@@ -3,6 +3,15 @@
 # Image Setup
 #--------------------------------------------------------------------------
 #
+# To edit the 'workspace' base Image, visit its repository on Github
+#    https://github.com/Laradock/workspace
+#
+# Базовый контейне
+#   See: https://github.com/phusion/baseimage-docker
+#
+# FROM laradock/workspace
+#   See: https://github.com/laradock/workspace/blob/master/Dockerfile-71
+#
 
 FROM laradock/workspace:2.0-71
 

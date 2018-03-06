@@ -35,11 +35,8 @@ ADD ./bin /usr/sbin
 # Optional Software's Installation
 #--------------------------------------------------------------------------
 #
-# Optional Software's will only be installed if you set them to `true`
-# in the `docker-compose.yml` before the build.
-# Example:
-#   - INSTALL_ZIP_ARCHIVE=true
-#
+
+
 RUN apt-get update -yqq
 
 #####################################
@@ -102,68 +99,32 @@ RUN if [ ${INSTALL_MONGO} = true ]; then \
 # AMQP:
 #####################################
 
-ARG INSTALL_AMQP=true
-RUN if [ ${INSTALL_AMQP} = true ]; then \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install librabbitmq-dev -y && \
     # Install the amqp extension
     pecl install amqp && \
-    docker-php-ext-enable amqp \
-;fi
+    docker-php-ext-enable amqp
 
 #####################################
 # ZipArchive:
 #####################################
-
-ARG INSTALL_ZIP_ARCHIVE=true
-RUN if [ ${INSTALL_ZIP_ARCHIVE} = true ]; then \
-    # Install the zip extension
-    docker-php-ext-install zip \
-;fi
-
-#####################################
-# bcmath:
-#####################################
-
-ARG INSTALL_BCMATH=true
-RUN if [ ${INSTALL_BCMATH} = true ]; then \
-    # Install the bcmath extension
-    docker-php-ext-install bcmath \
-;fi
+RUN docker-php-ext-install zip
+RUN docker-php-ext-install bcmath
 
 #####################################
 # GMP (GNU Multiple Precision):
 #####################################
-
-ARG INSTALL_GMP=true
-RUN if [ ${INSTALL_GMP} = true ]; then \
-    # Install the GMP extension
-    apt-get update -yqq && \
+RUN apt-get update -yqq && \
     apt-get install -y libgmp-dev && \
     ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h && \
-    docker-php-ext-install gmp \
-;fi
+    docker-php-ext-install gmp
 
-#####################################
-# PHP Memcached:
-#####################################
 
-ARG INSTALL_MEMCACHED=true
-RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
-    # Install the php memcached extension
-    pecl install memcached-2.2.0 && \
-    docker-php-ext-enable memcached \
-;fi
+RUN pecl install memcached-2.2.0 && \
+    docker-php-ext-enable memcached
 
-#####################################
-# Exif:
-#####################################
-
-ARG INSTALL_EXIF=true
-RUN if [ ${INSTALL_EXIF} = true ]; then \
-    # Enable Exif PHP extentions requirements
-    docker-php-ext-install exif \
-;fi
+RUN docker-php-ext-install exif
+RUN docker-php-ext-install opcache
 
 #####################################
 # PHP Aerospike:
@@ -188,50 +149,24 @@ RUN if [ ${INSTALL_EXIF} = true ]; then \
 #     && docker-php-ext-enable aerospike \
 # ;fi
 
-#####################################
-# Opcache:
-#####################################
-
-ARG INSTALL_OPCACHE=true
-RUN if [ ${INSTALL_OPCACHE} = true ]; then \
-    docker-php-ext-install opcache \
-;fi
-
-# Copy opcache configration
-COPY ./opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 #####################################
 # Mysqli Modifications:
 #####################################
-
-ARG INSTALL_MYSQLI=true
-# MySQL extenstion is available for Php5.6 and lower only
-COPY ./mysql.ini /usr/local/etc/php/conf.d/mysql.ini
-RUN if [ ${INSTALL_MYSQLI} = true ]; then \
-    docker-php-ext-install mysql && \
-    docker-php-ext-install mysqli \
-;fi
+RUN docker-php-ext-install mysql && \
+    docker-php-ext-install mysqli
 
 #####################################
 # Tokenizer Modifications:
 #####################################
-
-ARG INSTALL_TOKENIZER=true
-RUN if [ ${INSTALL_TOKENIZER} = true ]; then \
-    docker-php-ext-install tokenizer \
-;fi
+RUN docker-php-ext-install tokenizer
 
 #####################################
 # Human Language and Character Encoding Support:
 #####################################
-
-ARG INSTALL_INTL=true
-RUN if [ ${INSTALL_INTL} = true ]; then \
-    # Install intl and requirements
-    apt-get install -y zlib1g-dev libicu-dev g++ && \
+RUN apt-get install -y zlib1g-dev libicu-dev g++ && \
     docker-php-ext-configure intl && \
-    docker-php-ext-install intl \
-;fi
+    docker-php-ext-install intl
 
 #####################################
 # GHOSTSCRIPT:
@@ -248,13 +183,10 @@ RUN if [ ${INSTALL_INTL} = true ]; then \
 # LDAP:
 #####################################
 
-ARG INSTALL_LDAP=true
-RUN if [ ${INSTALL_LDAP} = true ]; then \
-    apt-get update -yqq && \
+RUN apt-get update -yqq && \
     apt-get install -y libldap2-dev && \
     docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ && \
-    docker-php-ext-install ldap \
-;fi
+    docker-php-ext-install ldap
 
 #####################################
 # SQL SERVER:
@@ -272,15 +204,11 @@ RUN if [ ${INSTALL_LDAP} = true ]; then \
 #####################################
 # IMAP:
 #####################################
-ARG INSTALL_IMAP=true
-ENV INSTALL_IMAP ${INSTALL_IMAP}
-RUN if [ ${INSTALL_IMAP} = true ]; then \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install -y libc-client-dev libkrb5-dev && \
     rm -r /var/lib/apt/lists/* && \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
-    docker-php-ext-install imap \
-;fi
+    docker-php-ext-install imap
 
 #####################################
 # Check PHP version:

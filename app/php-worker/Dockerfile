@@ -3,6 +3,8 @@
 # Image Setup
 #--------------------------------------------------------------------------
 #
+# Example https://github.com/bobbymaher/docker-laravel-workers
+#
 FROM fobia/php-fpm:latest${IMAGE_TAG}
 
 

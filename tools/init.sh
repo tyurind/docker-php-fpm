@@ -53,5 +53,20 @@ echo $USERWORK
 # user: ${WUSERID%%:*}
 # group: ${WUSERID##*:}
 
+#########################################
+APPDOCK_USER_CONFIG="~/.local/appdock/config"
 
+mkdir -p ~/.local/appdock/data
+echo "" >> $APPDOCK_USER_CONFIG
 
+echo "PUID=1000" >> $APPDOCK_USER_CONFIG
+echo "PGID=1000" >> $APPDOCK_USER_CONFIG
+echo "DOCKER_HOST_IP=10.0.75.1" >> $APPDOCK_USER_CONFIG
+echo "DOCKER_PORT_PREFIX=18" >> $APPDOCK_USER_CONFIG
+echo "DOCKER_PHP_IDE_CONFIG=serverName=laradock" >> $APPDOCK_USER_CONFIG
+echo "COMPOSER_HOME=./storage/composer" >> $APPDOCK_USER_CONFIG
+echo "COMPOSE_PATH_SEPARATOR=:" >> $APPDOCK_USER_CONFIG
+echo "COMPOSE_FILE=docker-compose.services.yml:_compose/ports.yml" >> $APPDOCK_USER_CONFIG
+
+# DOCKER_APPLICATION=.
+# DATA_SAVE_PATH=./.laradock/data
