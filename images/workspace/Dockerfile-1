@@ -1,0 +1,75 @@
+#
+#--------------------------------------------------------------------------
+# Image Setup
+# $REF: $
+#--------------------------------------------------------------------------
+#
+# To edit the 'workspace' base Image, visit its repository on Github
+#    https://github.com/Laradock/workspace
+#
+# Базовый контейне
+#   See: https://github.com/phusion/baseimage-docker
+#
+# FROM laradock/workspace
+#   See: https://github.com/laradock/workspace/blob/master/Dockerfile-71
+#
+
+FROM workspace:step-1
+
+LABEL build_step="2"
+LABEL tag_name="workspace:step-2"
+LABEL description="install ssh"
+
+#####################################
+# ssh:
+#####################################
+ARG INSTALL_WORKSPACE_SSH=true
+ENV INSTALL_WORKSPACE_SSH ${INSTALL_WORKSPACE_SSH}
+
+ADD insecure_id_rsa /tmp/id_rsa
+ADD insecure_id_rsa.pub /tmp/id_rsa.pub
+
+RUN if [ ${INSTALL_WORKSPACE_SSH} = true ]; then \
+    # rm -f /etc/service/sshd/down && \
+    cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys \
+        && cat /tmp/id_rsa.pub >> /root/.ssh/id_rsa.pub \
+        && cat /tmp/id_rsa >> /root/.ssh/id_rsa \
+        && rm -f /tmp/id_rsa* \
+        && chmod 644 /root/.ssh/authorized_keys /root/.ssh/id_rsa.pub \
+    && chmod 400 /root/.ssh/id_rsa \
+;fi
+
+RUN /usr/sbin/enable_insecure_key
+RUN touch /etc/service/sshd/down
+
+# RUN /usr/sbin/init-user-work.sh www-data 2>/dev/null
+RUN echo "" >> /etc/sudoers && \
+    echo "workuser ALL=(ALL) NOPASSWD:/sbin/my_init" >> /etc/sudoers && \
+    # echo "workuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
+    echo "" >> /etc/sudoers \
+    && echo "" >> /etc/ssh/sshd_config \
+    && echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config \
+    && echo "PermitEmptyPasswords yes" >> /etc/ssh/sshd_config \
+    && echo "" >> /etc/ssh/sshd_config
+
+
+## NEW CODE
+# RUN passwd -d laradock
+# COPY ./ssh_config /etc/ssh/ssh_config
+# COPY ./sshd_config /etc/ssh/sshd_config
+RUN cp -r /root/.ssh /home/workuser/.ssh && \
+    chown -R workuser:workuser /home/workuser/.ssh
+#####################################
+
+#
+#--------------------------------------------------------------------------
+# Clear code
+#--------------------------------------------------------------------------
+#
+
+RUN install_clean
+
+# Set default work directory
+WORKDIR /var/www
+
+CMD ["sudo", "/sbin/my_init"]

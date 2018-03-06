@@ -1,0 +1,29 @@
+#
+#--------------------------------------------------------------------------
+# Image Setup
+# $REF: $
+#--------------------------------------------------------------------------
+#
+# To edit the 'workspace' base Image, visit its repository on Github
+#    https://github.com/Laradock/workspace
+#
+# Базовый контейне
+#   See: https://github.com/phusion/baseimage-docker
+#
+# FROM laradock/workspace
+#   See: https://github.com/laradock/workspace/blob/master/Dockerfile-71
+#
+
+FROM workspace:step-2
+
+LABEL build_step="3"
+LABEL tag_name="workspace:step-3"
+LABEL description="install workuser"
+
+# Set default work directory
+WORKDIR /var/www
+USER workuser
+
+ENTRYPOINT ["/usr/sbin/entrypoint.sh"]
+
+CMD ["sudo", "/sbin/my_init"]

@@ -48,6 +48,7 @@ workusermod()
         if [ "$SET_PUID" -gt  "1" ]; then
             if [ $(id -u $USER_WORKER) != "${SET_PUID}" ]; then
                 usermod -u ${SET_PUID} $USER_WORKER 2>/dev/null
+                id -u workuser > /etc/workuser.lock
             fi
         fi
     fi
