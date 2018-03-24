@@ -18,8 +18,7 @@ FROM laradock/workspace:2.0-71
 
 
 # Remove Faillog and Lastlog to reduce the size of the final image.
-RUN rm /var/log/lastlog /var/log/faillog
-RUN mkdir -p /var/www
+RUN rm -rf /var/log/lastlog /var/log/faillog /etc/cron.d/*
 
 #
 #--------------------------------------------------------------------------
@@ -33,8 +32,8 @@ RUN mkdir -p /var/www
 #
 
 
-COPY .      /bd_build
-ADD ./bin   /usr/sbin
+COPY ./aliases.sh      /etc/aliases.sh
+ADD  ./bin   /usr/sbin
 
 #####################################
 # Non-Root User:
@@ -46,7 +45,8 @@ RUN add-apt-repository -y ppa:ondrej/php && \
             sudo \
             lsb-release \
             mc \
-            iputils-ping
+            iputils-ping \
+            net-tools
 
 
 # ARG PUID=1000
@@ -60,13 +60,14 @@ RUN groupadd -g 1000 workuser && \
     mkdir -p /home/workuser && \
     usermod -a -G sudo workuser && \
     usermod -s /bin/bash workuser && \
-    cp /bd_build/aliases.sh /home/workuser/aliases.sh && \
+    cp /etc/aliases.sh /home/workuser/aliases.sh && \
     touch  /home/workuser/.bashrc && \
     echo "" >> /home/workuser/.bashrc && \
     echo "# Load Custom Aliases" >> /home/workuser/.bashrc && \
     echo "source /home/workuser/aliases.sh" >> /home/workuser/.bashrc && \
     echo "" >> /home/workuser/.bashrc && \
     chown -R workuser:workuser /home/workuser && \
+    echo "" >> /etc/sudoers && \
     echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers && \
     echo 'workuser:secret' | chpasswd
 
@@ -77,9 +78,6 @@ RUN groupadd -g 1000 workuser && \
 ARG TZ=UTC
 ENV TZ ${TZ}
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-# Crontab
-RUN rm -rf /etc/cron.d/*
 
 
 #
@@ -104,7 +102,8 @@ RUN pecl update-channels
 RUN apt-get install -y php7.1-xdebug && \
     sed -i 's/^;//g' /etc/php/7.1/cli/conf.d/20-xdebug.ini
 # ADD for REMOTE debugging
-COPY ./xdebug.ini /etc/php/7.1/cli/conf.d/xdebug.ini
+# COPY ./xdebug.ini /etc/php/7.1/cli/conf.d/xdebug.ini
+COPY ./laravel.ini /etc/php/7.1/cli/conf.d/50-laravel.ini
 
 
 #####################################
@@ -156,8 +155,8 @@ USER root
 ARG CHROME_DRIVER_VERSION=2.32
 ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
 RUN add-apt-repository ppa:ondrej/php \
-  && apt-get update \
-  && apt-get -y install zip wget unzip xdg-utils \
+  && apt-get update -yq \
+  && apt-get -yq install zip wget unzip xdg-utils \
     libxpm4 libxrender1 libgtk2.0-0 libnss3 libgconf-2-4 xvfb \
     gtk2-engines-pixbuf xfonts-cyrillic xfonts-100dpi xfonts-75dpi \
     xfonts-base xfonts-scalable x11-apps \
@@ -191,28 +190,19 @@ RUN if [ ${INSTALL_WORKSPACE_SSH} = true ]; then \
         && rm -f /tmp/id_rsa* \
         && chmod 644 /root/.ssh/authorized_keys /root/.ssh/id_rsa.pub \
     && chmod 400 /root/.ssh/id_rsa \
+    && /usr/sbin/enable_insecure_key \
+    && touch /etc/service/sshd/down \
+    && cp -r /root/.ssh /home/workuser/.ssh \
+    && chown -R workuser:workuser /home/workuser/.ssh \
 ;fi
 
-RUN /usr/sbin/enable_insecure_key
-RUN touch /etc/service/sshd/down
-
 # RUN /usr/sbin/init-user-work.sh www-data 2>/dev/null
-RUN echo "" >> /etc/sudoers && \
-    echo "workuser ALL=(ALL) NOPASSWD:/sbin/my_init" >> /etc/sudoers && \
-    # echo "workuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && \
-    echo "" >> /etc/sudoers \
-    && echo "" >> /etc/ssh/sshd_config \
+RUN echo "" >> /etc/ssh/sshd_config \
     && echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config \
     && echo "PermitEmptyPasswords yes" >> /etc/ssh/sshd_config \
+    && echo "UsePAM yes" >> /etc/ssh/sshd_config \
     && echo "" >> /etc/ssh/sshd_config
 
-
-## NEW CODE
-# RUN passwd -d laradock
-# COPY ./ssh_config /etc/ssh/ssh_config
-# COPY ./sshd_config /etc/ssh/sshd_config
-RUN cp -r /root/.ssh /home/workuser/.ssh && \
-    chown -R workuser:workuser /home/workuser/.ssh
 #####################################
 
 #
