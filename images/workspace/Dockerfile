@@ -89,17 +89,17 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 #####################################
 # SOAP:
 #####################################
-RUN apt-get -y install libxml2-dev php7.1-soap && \
-    apt-get install -y libldap2-dev && \
-    apt-get install -y php7.1-ldap  && \
-    apt-get install -y php7.1-imap
+RUN apt-get -qy install libxml2-dev php7.1-soap && \
+    apt-get install -qy libldap2-dev && \
+    apt-get install -qy php7.1-ldap  && \
+    apt-get install -qy php7.1-imap
 
 #####################################
 # xDebug:
 #####################################
 RUN pecl update-channels
 
-RUN apt-get install -y php7.1-xdebug && \
+RUN apt-get install -qy php7.1-xdebug && \
     sed -i 's/^;//g' /etc/php/7.1/cli/conf.d/20-xdebug.ini
 # ADD for REMOTE debugging
 # COPY ./xdebug.ini /etc/php/7.1/cli/conf.d/xdebug.ini
@@ -109,7 +109,7 @@ COPY ./laravel.ini /etc/php/7.1/cli/conf.d/50-laravel.ini
 #####################################
 # AMQP:
 #####################################
-RUN apt-get install librabbitmq-dev -y && \
+RUN apt-get install librabbitmq-dev -qy && \
     # Install the mongodb extension
     pecl -q install amqp && \
     echo "extension=amqp.so" >> /etc/php/7.1/mods-available/amqp.ini && \
@@ -135,7 +135,7 @@ RUN curl -s http://getcomposer.org/installer | php && \
 #####################################
 # PYTHON:
 #####################################
-RUN apt-get -y install python python-pip python-dev build-essential  \
+RUN apt-get -qy install python python-pip python-dev build-essential  \
   && pip install --upgrade pip  \
   && pip install --upgrade virtualenv
 
@@ -146,7 +146,7 @@ RUN apt-get -y install python python-pip python-dev build-essential  \
 RUN curl -L https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
     sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
     apt-get update -yqq && \
-    apt-get install -y postgresql-client
+    apt-get install -qy postgresql-client
 
 #####################################
 # Dusk Dependencies:
@@ -160,12 +160,12 @@ RUN add-apt-repository ppa:ondrej/php \
     libxpm4 libxrender1 libgtk2.0-0 libnss3 libgconf-2-4 xvfb \
     gtk2-engines-pixbuf xfonts-cyrillic xfonts-100dpi xfonts-75dpi \
     xfonts-base xfonts-scalable x11-apps \
-  && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+  && wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
   && dpkg -i --force-depends google-chrome-stable_current_amd64.deb \
   && apt-get -y -f install \
   && dpkg -i --force-depends google-chrome-stable_current_amd64.deb \
   && rm google-chrome-stable_current_amd64.deb \
-  && wget https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip \
+  && wget -q https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip \
   && unzip chromedriver_linux64.zip \
   && mv chromedriver /usr/local/bin/ \
   && rm chromedriver_linux64.zip
