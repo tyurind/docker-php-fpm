@@ -22,8 +22,8 @@ ADD ./bin /usr/sbin
 
 RUN apt-get update -yqq
 RUN apt-get install -y --no-install-recommends \
-        wget \
-        curl \
+        wget curl \
+        zip unzip \
         libmemcached-dev \
         libz-dev \
         libpq-dev \
@@ -32,7 +32,7 @@ RUN apt-get install -y --no-install-recommends \
         libfreetype6-dev \
         libssl-dev \
         libmcrypt-dev \
-        libzip-dev libicu-dev zip unzip \
+        libzip-dev libicu-dev \
         libldap2-dev \
         librabbitmq-dev \
         libgmp-dev \

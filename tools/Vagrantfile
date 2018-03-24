@@ -21,13 +21,14 @@ PASSENGER_DOCKER_PATH = ENV['PASSENGER_PATH' ] || '../app'
 DOCKERIZER_PATH       = ENV['DOCKERIZER_PATH'] || '../dockerizer'
 
 $script = <<SCRIPT
-apt-get update -qqy
+apt-get update -qy
 apt-get install -q -y \
     apt-transport-https \
     ca-certificates \
     curl \
     software-properties-common \
-    lsb_release
+    mc \
+    lsb-release
 
 curl -fsSL get.docker.com -o get-docker.sh
 sh get-docker.sh

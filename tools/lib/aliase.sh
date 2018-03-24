@@ -29,3 +29,22 @@ dockerips ()
     done;
     docker ps -a | sed -e "$regex"
 }
+
+
+is_windows()
+{
+    # Grab OS type
+    if [[ "$(uname)" == "Darwin" ]]; then
+        OS_TYPE="OSX"
+    else
+        OS_TYPE=$(expr substr $(uname -s) 1 5)
+    fi
+
+    # If running on Windows, need to prepend with winpty :(
+    if [[ $OS_TYPE == "MINGW" ]]; then
+        winpty docker exec -it $PHP_FPM_CONTAINER bash -c 'php -v'
+    else
+        docker exec -it $PHP_FPM_CONTAINER bash -c 'php -v'
+    fi
+}
+
