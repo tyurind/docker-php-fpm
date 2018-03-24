@@ -13,7 +13,7 @@
 #
 
 # FROM gitlab.dev-ifc.com:4567/wellmax/app-image-for-build/images/php-fpm:develop
-FROM fobia/php-fpm:latest${IMAGE_TAG}
+FROM fobia/php-fpm:71
 
 ARG PUID=1000
 ARG PGID=1000
@@ -27,7 +27,9 @@ RUN if [ -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ]; then \
 
 RUN usermod -u ${PUID} www-data >/dev/null 2>&1
 RUN groupmod -g ${PGID} www-data >/dev/null 2>&1
-# RUN /usr/sbin/init-user-work.sh www-data 2>/dev/null
+
+RUN install_clean python-setuptools supervisor
+COPY supervisord.conf /etc/supervisord.conf
 
 USER www-data
 

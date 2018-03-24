@@ -1,50 +1,126 @@
 #!/bin/bash
 
 
-# Config
-GIT_DIR=${GIT_DIR}                    # Репозиторий GIT
-WORKTREE_DIR=${WORKTREE_DIR} # ".worktree"    # Директория дочерних проектов
 
-##
-## Arguments
-##
-BRANCH=$1
+# /srv/develop/docker-php-fpm/.git/worktrees/2cb2ff3
+ # git config --get-regexp worktrees
+ # git config --get-all worktrees.dir
 
 
-# git config worktrees.dir
-# git config worktrees.copy
-# git config worktrees.script
+# Return config value
+#
+# Usage:
+#
+#     __get_config <KEY>
+#
+#     __get_config worktree.dir
+#     __get_config worktree.copy
+#
+__get_config()
+{
+    if [[ $# == 0 ]]; then
+        echo "Invalid arguments: __get_config <key> "
+        echo $*
+        exit 1
+    fi
+
+    local __worktree_config="$(__get_repository_dir)/.worktreeconfig"
+    local __config_key=$1
+    local __config_value=$(git config "${__config_key}")
+
+    if [[ -r "${__worktree_config}" ]] && [[ "${__config_value}" == "" ]]; then
+        __config_value=$(git config --file "${__worktree_config}" "${__config_key}")
+    fi
+
+    echo ${__config_value}
+}
+
+# get repository dir
+#
+# Usage:
+#
+#     __get_repository_dir
+#
+__get_repository_dir()
+{
+    local __repository_dir=$(git worktree list | head -n 1 | cut -d " " -f 1)
+    if [[ "${__repository_dir}" == "" ]]; then
+        exit 1
+    fi
+    echo ${__repository_dir}
+}
+
+
+# Директория GIT_DIR
+#
+# Usage:
+#
+#     __get_git_dir
+#
+__get_git_dir()
+{
+    local __repository_dir=$(__get_repository_dir)
+    echo "${__repository_dir}/.git"
+}
+
+
+# Директория дочерних сборок
+#
+# Usage:
+#
+#     __get_worktree_dir <BRANCH|REF>
+#
+__get_worktree_dir()
+{
+    local __repository_dir=$(__get_repository_dir)
+    local __worktree_dir=$(git config worktrees.dir)
+
+    if [[ "${__worktree_dir}" == "" ]]; then
+        __worktree_dir="${__repository_dir}/.git/worktrees_src"
+        if [[ ! -d "${__worktree_dir}" ]]; then
+            mkdir -p "${__worktree_dir}"
+        fi
+    fi
+
+    if [[ "$1" != "" ]]; then
+        local ref=$(git log -1 --pretty=format:%h $1)
+        __worktree_dir="${__worktree_dir}/${ref}"
+    fi
+
+    echo "${__worktree_dir}"
+}
 
 
 
-# redis-cli FLUSHALL
+# Директория дочерних сборок
+#
+# Usage:
+#
+#     __trim " asd "            # Output: "asd"
+#     echo " asd " | __trim     # Output: "asd"
+#
+__trim()
+{
+    if [[ $# = 0 ]]; then
+        while read i; do
+            trim $i
+            echo;
+        done
+        return
+    fi
 
-# git log -1 --pretty=format:'%h %D'
-# Merge branch '329' into 'master'
+    local var="$*"
+    local var0=""
 
-# git merge -m "Merge branch '358' into 'master'" origin/358
+    # remove leading whitespace characters
+    var0="${var%%[![:space:]]*}"
+    var="${var#$var0}"
 
-
-# WORKTREE_DIR=".worktree/${BRANCH}"
-
-# REF=$(git log -1 --pretty=format:%h)
-
-##        # Обновляем удаленые ветки
-##        git fetch origin
-##
-##        # Создаем отдельную директорию на ветку
-##        git worktree add ".worktree/${BRANCH}" "origin/${BRANCH}"
-##        # Скопируем папку с уже установлеными пакетами, чтоб быстрее прошла установка composer install
-##        cp -r ./vendor "${WORKTREE_DIR}/"
-##
-##        cd $WORKTREE_DIR
-##
-##        composer install
-##
-##        # Генерируем параметры
-##        cp ./.env.example ./.env
-##        php artisan key:generate
-
+    # remove trailing whitespace characters
+    var0="${var##*[![:space:]]}"
+    var="${var%$var0}"
+    echo -n "$var"
+}
 
 
 docker_cmd()
@@ -101,82 +177,6 @@ __dockerip()
     docker_cmd inspect -f '{{range .NetworkSettings.Networks}} {{.IPAddress}}{{end}} ' "$@"
 }
 
-__get_git_dir()
-{
-    local __repository_dir=$(__get_repository_dir)
-    echo "${__repository_dir}/.git"
-}
-
-__get_repository_dir()
-{
-    local __repository_dir=$(git worktree list | head -n 1 | cut -d " " -f 1)
-    if [[ "${__repository_dir}" == "" ]]; then
-        exit 1
-    fi
-    echo ${__repository_dir}
-}
-
-__get_worktree_dir()
-{
-    local __repository_dir=$(__get_repository_dir)
-    local __worktree_dir=$(git config worktrees.dir)
-
-    if [[ "${__worktree_dir}" == "" ]]; then
-        __worktree_dir="${__repository_dir}/.git/worktrees_src"
-        if [[ ! -d "${__worktree_dir}" ]]; then
-            mkdir -p "${__worktree_dir}"
-        fi
-    fi
-
-    if [[ "$1" != "" ]]; then
-        local ref=$(git log -1 --pretty=format:%h $1)
-        __worktree_dir="${__worktree_dir}/${ref}"
-    fi
-
-    echo "${__worktree_dir}"
-}
-
-__get_config()
-{
-    if [[ $# == 0 ]]; then
-        echo "Invalid arguments: __get_config <key> "
-        echo $*
-        exit 1
-    fi
-
-    local __worktree_config="$(__get_repository_dir)/.worktreeconfig"
-    local __config_key=$1
-    local __config_value=$(git config "${__config_key}")
-
-    if [[ -r "${__worktree_config}" ]] && [[ "${__config_value}" == "" ]]; then
-        __config_value=$(git config --file "${__worktree_config}" "${__config_key}")
-    fi
-
-    echo ${__config_value}
-}
-
-__trim()
-{
-    if [[ $# = 0 ]]; then
-        while read i; do
-            trim $i
-            echo;
-        done
-        return
-    fi
-
-    local var="$*"
-    local var0=""
-
-    # remove leading whitespace characters
-    var0="${var%%[![:space:]]*}"
-    var="${var#$var0}"
-
-    # remove trailing whitespace characters
-    var0="${var##*[![:space:]]}"
-    var="${var%$var0}"
-    echo -n "$var"
-}
 
 branch_init()
 {
@@ -292,24 +292,3 @@ show_ips()
 }
 
 #================================
-
-case $1 in
-    init)
-        # shift
-        branch_init $2
-        ;;
-    down)
-        branch_down $2
-        ;;
-    config)
-        branch_config $2
-        ;;
-    *)
-        echo "Error Arguments"
-        exit 1
-esac
-
-
-# /srv/develop/docker-php-fpm/.git/worktrees/2cb2ff3
- # git config --get-regexp worktrees
- # git config --get-all worktrees.dir

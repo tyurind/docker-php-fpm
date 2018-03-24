@@ -2,10 +2,7 @@ FROM nginx:alpine
 # ----------------
 
 ARG PUID=1000
-ARG PGID=1000
-
 ENV PUID ${PUID}
-ENV PGID ${PGID}
 
 ADD nginx.conf /etc/nginx/
 

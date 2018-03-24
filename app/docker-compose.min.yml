@@ -1,0 +1,179 @@
+version: '2.2'
+
+### SERVICES
+services:
+
+### Workspace Utilities Container ###########################
+    workspace:
+      build:
+        context: ./workspace
+        args:
+          - PUID=${PUID:-1000}
+          - PGID=${PUID:-1000}
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP}"
+      # ports:
+        # - "2222:22"
+      tty: true
+      networks:
+        - backend
+
+### PHP-FPM Container #######################################
+
+    php-fpm:
+      &default-php
+      build:
+        context: ./php-fpm
+        args:
+          - PUID=${PUID:-1000}
+          - PGID=${PUID:-1000}
+      volumes:
+        - wwwdata:/var/www
+        - ./php-fpm/php.ini:/usr/local/etc/php/php.ini
+      expose:
+        - "9000"
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP:-10.0.75.1}"
+      environment:
+        - PHP_IDE_CONFIG=${DOCKER_PHP_IDE_CONFIG:-laradock}
+        - DB_HOST=mysql
+        - COMPOSER_HOME=/tmp/composer
+      networks:
+        - backend
+
+### PHP Worker Container #####################################
+
+    php-worker:
+      << : *default-php
+      depends_on:
+        - php-fpm
+      user: root
+      working_dir: /etc/supervisor/conf.d/
+      entrypoint:
+        - /usr/bin/supervisord
+        - -n
+        - -c
+        - /etc/supervisord.conf
+      networks:
+        - backend
+
+### NGINX Server Container ##################################
+
+    nginx:
+      build:
+        context: ./nginx
+        args:
+          - PHP_UPSTREAM_CONTAINER=php-fpm
+          - PHP_UPSTREAM_PORT=9000
+          - PUID=${PUID:-1000}
+      volumes:
+        - wwwdata:/var/www
+        - ./storage/logs/nginx/:/var/log/nginx
+        - ./nginx/sites/:/etc/nginx/sites-available
+      # ports:
+        # - "8181:80"
+      depends_on:
+        - php-fpm
+      networks:
+        - backend
+
+### PostgreSQL Container ####################################
+
+    database:
+      build: ./postgres
+      environment:
+        - POSTGRES_DB=wellmax
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - PGDATA=/var/lib/postgresql/data
+      volumes:
+        - database:/var/lib/postgresql/data
+      # ports:
+        # - "5433:5432"
+      networks:
+        - backend
+
+### Redis Container #########################################
+
+    redis:
+      build: ./redis
+      # ports:
+        # - "6379:6379"
+      networks:
+        - backend
+
+
+### RabbitMQ Container ######################################
+
+    rabbitmq:
+      build: ./rabbitmq
+      # ports:
+      #   - "5672:5672"
+      #   - "15672:15672"
+      #   - "15671:15671"
+      privileged: true
+      environment:
+        - RABBITMQ_DEFAULT_USER=guest
+        - RABBITMQ_DEFAULT_PASS=guest
+        - RABBITMQ_DEFAULT_VHOST=/
+      depends_on:
+        - php-fpm
+      networks:
+        - backend
+
+
+### pgAdmin Container #######################################
+
+    pgadmin:
+      build: ./pgadmin
+      # ports:
+      #   - "5050:5050"
+      #   - "8081:5050"
+      environment:
+        - DEFAULT_USER=postgres
+        - DEFAULT_PASSWORD=postgres
+      depends_on:
+        - database
+      networks:
+        - backend
+
+
+### Selenium Container ########################################
+
+    selenium:
+      build: ./selenium
+      # ports:
+      #   - "4444:4444"
+      volumes:
+        - /dev/shm:/dev/shm
+      networks:
+        - backend
+
+### ADMINER Server Container ##################################
+
+    adminer:
+      image: adminer
+      # ports:
+      #   - 8182:8080
+      networks:
+        - backend
+
+### Networks Setup ############################################
+
+networks:
+  backend:
+    driver: "bridge"
+
+### Volumes Setup #############################################
+
+volumes:
+  wwwdata:
+    driver: "local"
+  databse:
+    driver: "local"
+  pgadmin:
+    driver: "local"
+  memcached:
+    driver: "local"
+  redis:
+    driver: "local"

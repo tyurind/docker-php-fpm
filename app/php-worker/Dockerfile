@@ -5,7 +5,7 @@
 #
 # Example https://github.com/bobbymaher/docker-laravel-workers
 #
-FROM fobia/php-fpm:latest${IMAGE_TAG}
+FROM FROM fobia/php-fpm:71
 
 
 ARG PUID=1000
