@@ -13,13 +13,13 @@
 # FROM laradock/workspace
 #   See: https://github.com/laradock/workspace/blob/master/Dockerfile-71
 #
-
 FROM laradock/workspace:2.0-71
 
+RUN rm -rf /var/log/lastlog /var/log/faillog /etc/cron.d/*
 
-# Remove Faillog and Lastlog to reduce the size of the final image.
-RUN rm -rf /var/log/lastlog /var/log/faillog
-RUN mkdir -p /var/www
+COPY ./aliases.sh      /etc/aliases.sh
+ADD  ./bin   /usr/sbin
+ADD  ./src   /usr/local/etc/src
 
 #
 #--------------------------------------------------------------------------
@@ -32,49 +32,55 @@ RUN mkdir -p /var/www
 # base image (https://github.com/Laradock/workspace).
 #
 
-
-COPY .      /bd_build
-ADD ./bin   /usr/sbin
-
 #####################################
 # Non-Root User:
 #####################################
 USER root
-RUN add-apt-repository -y ppa:ondrej/php && \
-    apt-get update -yqq && \
-    apt-get install -y \
-            sudo \
-            lsb-release \
-            mc \
-            iputils-ping
 
+ARG TZ=UTC
+
+ENV TZ ${TZ}
 ENV PUID 1000
 ENV PGID 1000
 
-RUN groupadd -g 1000 workuser && \
-    useradd -u 1000 -g workuser -m workuser && \
-    mkdir -p /home/workuser && \
-    usermod -a -G sudo workuser && \
-    usermod -s /bin/bash workuser && \
-    cp /bd_build/aliases.sh /home/workuser/aliases.sh && \
-    touch  /home/workuser/.bashrc && \
-    echo "" >> /home/workuser/.bashrc && \
-    echo "# Load Custom Aliases" >> /home/workuser/.bashrc && \
-    echo "source /home/workuser/aliases.sh" >> /home/workuser/.bashrc && \
-    echo "" >> /home/workuser/.bashrc && \
-    chown -R workuser:workuser /home/workuser && \
-    echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers && \
-    echo 'workuser:secret' | chpasswd
+RUN bash /usr/local/etc/src/apt-install.sh
+RUN bash /usr/local/etc/src/useradd.sh
+
+#
+#--------------------------------------------------------------------------
+# PHP Installation
+#--------------------------------------------------------------------------
+#
+COPY ./laravel.ini /etc/php/7.1/cli/conf.d/50-laravel.ini
+
+RUN bash /usr/local/etc/src/php.sh
+
+RUN bash /usr/local/etc/src/python.sh
+
 
 #####################################
-# Set Timezone
+# Dusk Dependencies:
 #####################################
+ARG CHROME_DRIVER_VERSION=2.32
+ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
 
-ARG TZ=UTC
-ENV TZ ${TZ}
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN bash /usr/local/etc/src/dusk.sh
 
-# Crontab
-RUN rm -rf /etc/cron.d/*
+#####################################
+# ssh:
+#####################################
+ARG INSTALL_WORKSPACE_SSH=true
+ENV INSTALL_WORKSPACE_SSH ${INSTALL_WORKSPACE_SSH}
+
+ADD insecure_id_rsa /tmp/id_rsa
+ADD insecure_id_rsa.pub /tmp/id_rsa.pub
+
+RUN bash /usr/local/etc/src/ssh.sh
+## -----------------------------------
 
 RUN install_clean
+
+# Set default work directory
+WORKDIR /var/www
+
+CMD ["sudo", "/sbin/my_init"]
