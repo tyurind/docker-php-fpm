@@ -1,0 +1,7 @@
+version: '2.2'
+
+### SERVICES
+services:
+    nginx:
+      ports:
+        - "80:80"

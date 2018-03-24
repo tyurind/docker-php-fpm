@@ -1,0 +1,82 @@
+version: '2.2'
+
+### SERVICES
+services:
+
+### Applications Code Container #############################
+
+    applications:
+      image: tianon/true
+      volumes:
+        # - wwwdata:/var/www
+        - ${DOCKER_APPLICATION:-./../}:/var/www
+
+
+### Workspace Utilities Container ###########################
+    workspace:
+      volumes_from:
+        - applications
+
+### PHP-FPM Container #######################################
+
+    php-fpm:
+      volumes_from:
+        - applications
+      volumes:
+        - ${DATA_SAVE_PATH}/composer:/tmp/composer
+
+### PHP Worker Container #####################################
+
+    # php-worker:
+
+### NGINX Server Container ##################################
+
+    nginx:
+      volumes_from:
+        - applications
+      volumes:
+        - ${DATA_SAVE_PATH}/logs/nginx/:/var/log/nginx
+
+### PostgreSQL Container ####################################
+
+    database:
+      volumes:
+        # - ${DATA_SAVE_PATH}/postgres:/var/lib/postgresql/data
+        - database:/var/lib/postgresql/data
+
+### Redis Container #########################################
+
+    redis:
+      volumes:
+        - ${DATA_SAVE_PATH}/redis:/data
+
+### RabbitMQ Container ######################################
+
+    # rabbitmq:
+
+
+### pgAdmin Container #######################################
+
+    pgadmin:
+      volumes:
+        - ${DATA_SAVE_PATH}/pgadmin:/data
+
+
+### Selenium Container ########################################
+
+    # selenium:
+
+
+### Volumes Setup #############################################
+
+volumes:
+  wwwdata:
+    driver: "local"
+  database:
+    driver: "local"
+  composer:
+    driver: "local"
+  pgadmin:
+    driver: "local"
+  redis:
+    driver: "local"

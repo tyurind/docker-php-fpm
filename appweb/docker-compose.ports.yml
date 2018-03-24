@@ -1,0 +1,86 @@
+version: '2.2'
+
+### SERVICES
+services:
+
+### Applications Code Container #############################
+
+    applications:
+      networks:
+        - backend
+
+### Workspace Utilities Container ###########################
+    workspace:
+      ports:
+        - "2222:22"
+      networks:
+        - backend
+
+### PHP-FPM Container #######################################
+
+    php-fpm:
+      links:
+        - database
+      networks:
+        - backend
+
+### PHP Worker Container #####################################
+
+    php-worker:
+      networks:
+        - backend
+
+### NGINX Server Container ##################################
+
+    nginx:
+      networks:
+        - backend
+
+### PostgreSQL Container ####################################
+
+    database:
+      # ports:
+        # - "5432:5432"
+      networks:
+        - backend
+
+### Redis Container #########################################
+
+    redis:
+      networks:
+        - backend
+
+### RabbitMQ Container ######################################
+
+    rabbitmq:
+      # ports:
+      #   - "5672:5672"
+      #   - "15672:15672"
+      #   - "15671:15671"
+      networks:
+        - backend
+
+
+### pgAdmin Container #######################################
+
+    pgadmin:
+      # ports:
+      #   - "5050:5050"
+      #   - "8081:5050"
+      networks:
+        - backend
+
+
+### Selenium Container ########################################
+
+    selenium:
+      # ports:
+      #   - "4444:4444"
+      networks:
+        - backend
+
+### Networks Setup ############################################
+
+networks:
+  backend:
+    driver: "bridge"

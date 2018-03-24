@@ -1,0 +1,158 @@
+version: '2.2'
+
+### SERVICES
+services:
+
+### Applications Code Container #############################
+
+    applications:
+      image: tianon/true
+      volumes:
+        - ${DOCKER_APPLICATION:-./../}:/var/www
+
+### Workspace Utilities Container ###########################
+    workspace:
+      build:
+        context: ./workspace
+        args:
+          - PUID=${PUID:-1000}
+          - PGID=${PUID:-1000}
+      volumes_from:
+        - applications
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP:-10.0.75.1}"
+      tty: true
+
+### PHP-FPM Container #######################################
+
+    php-fpm:
+      &default-php
+      build:
+        context: ./php-fpm
+        args:
+          - PUID=${PUID:-1000}
+          - PGID=${PUID:-1000}
+      volumes_from:
+        - applications
+      volumes:
+        - ${DATA_SAVE_PATH}/composer:/tmp/composer
+        - ./php-fpm/php.ini:/usr/local/etc/php/php.ini
+        - ./php-fpm/conf.d/:/etc/supervisor/conf.d
+      expose:
+        - "9000"
+      extra_hosts:
+        - "dockerhost:${DOCKER_HOST_IP:-10.0.75.1}"
+      environment:
+        - PHP_IDE_CONFIG=${DOCKER_PHP_IDE_CONFIG:-laradock}
+        - COMPOSER_HOME=/tmp/composer
+
+### PHP Worker Container #####################################
+
+    php-worker:
+      << : *default-php
+      depends_on:
+        - php-fpm
+      user: root
+      working_dir: /etc/supervisor/conf.d/
+      entrypoint:
+        - /usr/bin/supervisord
+        - -n
+        - -c
+        - /etc/supervisord.conf
+
+### NGINX Server Container ##################################
+
+    nginx:
+      build:
+        context: ./nginx
+        args:
+          - PHP_UPSTREAM_CONTAINER=php-fpm
+          - PHP_UPSTREAM_PORT=9000
+          - PUID=${PUID:-1000}
+      volumes_from:
+        - applications
+      volumes:
+        - ${DATA_SAVE_PATH}/logs/nginx/:/var/log/nginx
+        - ./nginx/sites/:/etc/nginx/sites-available
+      depends_on:
+        - php-fpm
+
+### PostgreSQL Container ####################################
+
+    database:
+      build:
+        context: ./postgres
+        # args:
+          # - PGDATA=/var/lib/postgresql/data
+      # image: postgres:10
+      environment:
+        - POSTGRES_DB=wellmax
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - PGDATA=/var/lib/postgresql/data
+      # volumes:
+        # - ${DATA_SAVE_PATH}/postgres:/var/lib/postgresql/data
+        # - database:/var/lib/postgresql/data
+      # ports:
+        # - "5432:5432"
+
+### Redis Container #########################################
+
+    redis:
+      build:
+        context: ./redis
+      # volumes:
+        # - ${DATA_SAVE_PATH}/redis:/data
+
+### RabbitMQ Container ######################################
+
+    rabbitmq:
+      build: ./rabbitmq
+      # ports:
+      #   - "5672:5672"
+      #   - "15672:15672"
+      #   - "15671:15671"
+      privileged: true
+      environment:
+        - RABBITMQ_DEFAULT_USER=guest
+        - RABBITMQ_DEFAULT_PASS=guest
+        - RABBITMQ_DEFAULT_VHOST=/
+      depends_on:
+        - php-fpm
+
+
+### pgAdmin Container #######################################
+
+    pgadmin:
+      build: ./pgadmin
+      # ports:
+      #   - "5050:5050"
+      #   - "8081:5050"
+      environment:
+        - DEFAULT_USER=postgres
+        - DEFAULT_PASSWORD=postgres
+      depends_on:
+        - database
+
+
+### Selenium Container ########################################
+
+    selenium:
+      image: selenium/standalone-chrome
+      expose:
+        - "4444"
+      # ports:
+      #   - "4444:4444"
+      # links:
+      #     - nginx
+      #     - workspace
+      volumes:
+        - /dev/shm:/dev/shm
+
+### Volumes Setup #############################################
+
+volumes:
+  database:
+    driver: "local"
+  composer:
+    driver: "local"
