@@ -55,8 +55,6 @@ COPY ./laravel.ini /etc/php/7.1/cli/conf.d/50-laravel.ini
 
 RUN bash /usr/local/etc/src/php.sh
 
-RUN bash /usr/local/etc/src/python.sh
-
 
 #####################################
 # Dusk Dependencies:
