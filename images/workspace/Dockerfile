@@ -183,15 +183,15 @@ ADD insecure_id_rsa /tmp/id_rsa
 ADD insecure_id_rsa.pub /tmp/id_rsa.pub
 
 RUN if [ ${INSTALL_WORKSPACE_SSH} = true ]; then \
-    # rm -f /etc/service/sshd/down && \
-    cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys \
+    rm -f /etc/service/sshd/down \
+    && /usr/sbin/enable_insecure_key \
+    && /etc/my_init.d/00_regen_ssh_host_keys.sh \
+    && cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys \
         && cat /tmp/id_rsa.pub >> /root/.ssh/id_rsa.pub \
         && cat /tmp/id_rsa >> /root/.ssh/id_rsa \
         && rm -f /tmp/id_rsa* \
         && chmod 644 /root/.ssh/authorized_keys /root/.ssh/id_rsa.pub \
     && chmod 400 /root/.ssh/id_rsa \
-    && /usr/sbin/enable_insecure_key \
-    && touch /etc/service/sshd/down \
     && cp -r /root/.ssh /home/workuser/.ssh \
     && chown -R workuser:workuser /home/workuser/.ssh \
 ;fi

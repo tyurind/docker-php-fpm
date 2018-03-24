@@ -4,7 +4,8 @@
 if [ ${INSTALL_WORKSPACE_SSH} = true ]; then \
     rm -f /etc/service/sshd/down \
     && /usr/sbin/enable_insecure_key \
-    && touch /etc/service/sshd/down \
+    && /etc/my_init.d/00_regen_ssh_host_keys.sh \
+    # && touch /etc/service/sshd/down \
     && cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys \
         && cat /tmp/id_rsa.pub >> /root/.ssh/id_rsa.pub \
         && cat /tmp/id_rsa >> /root/.ssh/id_rsa \
