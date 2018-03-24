@@ -74,7 +74,9 @@ branch_init()
     local ref=$(git log -1 --pretty=format:%h $1)
     local branch_project="${WORKTREE_DIR}/${ref}"
 
-
+    if [[ ! -d "$WORKTREE_DIR" ]]; then
+        mkdir -p "$WORKTREE_DIR"
+    fi
 
     # Создаем отдельную директорию на ветку
     git worktree add "${branch_project}" "origin/${ref}"
