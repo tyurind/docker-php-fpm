@@ -48,3 +48,29 @@ is_windows()
     fi
 }
 
+# dockerip appdocker_nginx_1 | sed 's/\s\+/\n/g' | sed '/^$/d'
+
+trim()
+{
+    if [[ $# = 0 ]]; then
+        while read i; do
+            trim $i
+            echo;
+        done
+        return
+    fi
+
+    local var="$*"
+    local var0=""
+
+    # remove leading whitespace characters
+    var0="${var%%[![:space:]]*}"
+    var="${var#$var0}"
+
+    # remove trailing whitespace characters
+    var0="${var##*[![:space:]]}"
+    var="${var%$var0}"
+    echo -n "$var"
+}
+# dockerip appdocker_nginx_1 | trim | cut -d " " -f 1
+# docker-compose ps | tail --lines=+3 | cut -d " " -f 1 | while read i; do IPC=$(dockerip $i | trim | cut -d " " -f 1); echo "$i:$IPC"; done
