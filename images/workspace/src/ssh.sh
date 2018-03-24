@@ -15,6 +15,12 @@ if [ ${INSTALL_WORKSPACE_SSH} = true ]; then \
     && chown -R workuser:workuser /home/workuser/.ssh \
 ;fi
 
+echo "No SSH host key available. Generating one..."
+export LC_ALL=C
+export DEBIAN_FRONTEND=noninteractive
+dpkg-reconfigure openssh-server
+
+
 # RUN /usr/sbin/init-user-work.sh www-data 2>/dev/null
 echo "" >> /etc/ssh/sshd_config \
     && echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config \
