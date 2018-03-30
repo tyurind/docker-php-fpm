@@ -115,3 +115,18 @@ PGID=${PGID-33}
 #             groupmod -g ${PGID} $USER_WORKER 2>/dev/null
 #         fi
 #     fi
+
+
+ls -land .git | cut -d " " -f 3
+
+_usermod_by_dir()
+{
+  local user_dir="$1/.git"
+  local USER_WORKER="$2"
+
+  local user_id=$(ls -land $user_dir | cut -d " " -f 3)
+  local group_id=$(ls -land $user_dir | cut -d " " -f 4)
+
+  usermod -o -u ${user_id} $USER_WORKER 2>/dev/null
+  usermod -o -g ${group_id} $USER_WORKER 2>/dev/null
+}

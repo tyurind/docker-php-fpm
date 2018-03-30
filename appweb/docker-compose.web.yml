@@ -2,6 +2,13 @@ version: '2.2'
 
 ### SERVICES
 services:
-    nginx:
+    web:
       ports:
         - "80:80"
+    #   image: "web-image:latest"
+    # app:
+    #   image: "app-image:latest"
+    # php-worker:
+    #   image: "php-worker-image:latest"
+    # php-cron:
+    #   image: "php-cron-image:latest"

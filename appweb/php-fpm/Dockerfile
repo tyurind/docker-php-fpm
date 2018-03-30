@@ -27,10 +27,11 @@ RUN if [ -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ]; then \
 RUN usermod -u ${PUID} www-data >/dev/null 2>&1
 RUN groupmod -g ${PGID} www-data >/dev/null 2>&1
 
-RUN install_clean python-setuptools supervisor cron
+RUN install_clean supervisor cron
+
 COPY supervisord.conf /etc/supervisord.conf
-COPY crontab.txt /etc/crontab.txt
-RUN cron -u www-data /etc/crontab.txt
+COPY ./crontab/www-data /etc/cron.d/www-data
+RUN chmod -R 644 /etc/cron.d/www-data
 
 # RUN echo "" > /etc/profile.d/histdisable.sh \
 #     && echo "export HISTFILESIZE=0" >> /etc/profile.d/histdisable.sh \

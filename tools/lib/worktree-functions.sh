@@ -1,11 +1,42 @@
 #!/bin/bash
 
 
+# worktrees.dir
+# worktrees.copy
+# worktrees.script
+# worktrees.afterscript
+# worktrees.beforescript
+
 
 # /srv/develop/docker-php-fpm/.git/worktrees/2cb2ff3
  # git config --get-regexp worktrees
  # git config --get-all worktrees.dir
 
+
+# prints colored text
+print_style () {
+
+    if [ "$2" == "info" ] ; then
+        COLOR="96m"
+    elif [ "$2" == "success" ] ; then
+        COLOR="92m"
+    elif [ "$2" == "warning" ] ; then
+        COLOR="93m"
+    elif [ "$2" == "danger" ] ; then
+        COLOR="91m"
+    else #default color
+        COLOR="0m"
+    fi
+
+    STARTCOLOR="\e[$COLOR"
+    ENDCOLOR="\e[0m"
+
+    printf "$STARTCOLOR%b$ENDCOLOR" "$1"
+}
+
+display_options () {
+    printf "Available options:\n";
+}
 
 # Return config value
 #
@@ -120,6 +151,17 @@ __trim()
     var0="${var##*[![:space:]]}"
     var="${var%$var0}"
     echo -n "$var"
+}
+
+__docker_cmd()
+{
+    local run__docker_cmd="docker"
+    local ARGS="$*"
+
+    if [[ $ARGS =~ "docker" && $ARGS =~ "exec" ]]; then
+        echo "bash"
+    fi
+    docker
 }
 
 
@@ -253,7 +295,7 @@ branch_down()
 
 
     if [[ -d "$branch_project" ]]; then
-        cd "$branch_project" && docker-compose down 2>/dev/null
+        cd "$branch_project" && docker-compose down --rmi local -v 2>/dev/null
     else
         echo "No branch worktree: $branch_project"
         return
@@ -292,3 +334,28 @@ show_ips()
 }
 
 #================================
+
+if [[ "$0" = '-bash' || "$0" = 'bash' || "$0" = 'sh' ]]; then
+    if [ "$(which git) 2>/dev/null" = "" ] && [ "$(which docker) 2>/dev/null" != "" ] && [ "$(which docker-compose) 2>/dev/null" != "" ]; then
+        __INIT__WORKTREE_FUNCTIONS=true
+    else
+        echo "Error init functions"
+    fi
+else
+    case $1 in
+        init)
+            # shift
+            branch_init $2
+            ;;
+        down)
+            branch_down $2
+            ;;
+        config)
+            branch_config $2
+            ;;
+        *)
+            echo "Error Arguments"
+            exit 1
+    esac
+fi
+# if [[ ]]

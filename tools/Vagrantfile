@@ -56,6 +56,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.ssh.port = 2232
   # config.vm.network :forwarded_port, guest: 22, disabled: true
   config.vm.network "forwarded_port", guest: 22, host: 2232
+  config.vm.network "forwarded_port", guest: 80, host: 8083
+
 
   passenger_docker_path = File.absolute_path(PASSENGER_DOCKER_PATH, ROOT)
   if File.directory?(passenger_docker_path)
@@ -69,10 +71,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   if File.directory?(dockerizer_path)
     config.vm.synced_folder dockerizer_path, '/vagrant/dockerizer'
   end
-
   config.vm.provider :vmware_fusion do |f, override|
     override.vm.box_url = VMWARE_BOX_URL
     f.vmx['displayName'] = 'baseimage-docker'
+  end
+
+  srv_path = File.absolute_path("../../../", ROOT)
+  if File.directory?(srv_path)
+    config.vm.synced_folder srv_path, "/srv",
+      owner: 'vagrant',
+      group: 'www-data',
+      mount_options: [ 'dmode=775', 'fmode=775' ],
+      type: "nfs",
+      nfs_udp: false
   end
 
   config.vm.provider "virtualbox" do |vb|
