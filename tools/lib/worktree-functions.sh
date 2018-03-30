@@ -14,7 +14,8 @@
 
 
 # prints colored text
-print_style () {
+print_style ()
+{
 
     if [ "$2" == "info" ] ; then
         COLOR="96m"
@@ -34,7 +35,8 @@ print_style () {
     printf "$STARTCOLOR%b$ENDCOLOR" "$1"
 }
 
-display_options () {
+display_options ()
+{
     printf "Available options:\n";
 }
 
@@ -155,13 +157,28 @@ __trim()
 
 __docker_cmd()
 {
-    local run__docker_cmd="docker"
     local ARGS="$*"
+    local OS_TYPE=""
 
-    if [[ $ARGS =~ "docker" && $ARGS =~ "exec" ]]; then
-        echo "bash"
+    # Grab OS type
+    if [[ "$(uname)" == "Darwin" ]]; then
+        OS_TYPE="OSX"
+    else
+        OS_TYPE=$(expr substr $(uname -s) 1 5)
     fi
-    docker
+
+    # If running on Windows, need to prepend with winpty :(
+    if [[ $OS_TYPE == "MINGW" ]]; then
+        if [[ $ARGS =~ "exec" ]] && [[ $ARGS =~ "docker" ]]; then
+            ARGS="winpty ${ARGS}"
+        fi
+    else
+        if [[ "$(which sudo 2>/dev/null)" != "" ]]; then
+            ARGS="sudo ${ARGS}"
+        fi
+    fi
+
+    $ARGS
 }
 
 
@@ -336,7 +353,7 @@ show_ips()
 #================================
 
 if [[ "$0" = '-bash' || "$0" = 'bash' || "$0" = 'sh' ]]; then
-    if [ "$(which git) 2>/dev/null" = "" ] && [ "$(which docker) 2>/dev/null" != "" ] && [ "$(which docker-compose) 2>/dev/null" != "" ]; then
+    if [ "$(which git) 2>/dev/null" != "" ] && [ "$(which docker) 2>/dev/null" != "" ] && [ "$(which docker-compose) 2>/dev/null" != "" ]; then
         __INIT__WORKTREE_FUNCTIONS=true
     else
         echo "Error init functions"
