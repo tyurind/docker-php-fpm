@@ -5,14 +5,15 @@ x-php-fpm:
   build:
     context: ./php-fpm
     args:
-      - PUID=${PUID:-1000}
-      - PGID=${PUID:-1000}
+      - PUID=${PUID:-1010}
+      - PGID=${EUID:-1010}
   volumes_from:
     - applications
   volumes:
     # - ${DATA_SAVE_PATH}/composer:/tmp/composer
     - ./php-fpm/php.ini:/usr/local/etc/php/php.ini
     - ./php-fpm/conf.d/:/etc/supervisor/conf.d
+    - composer:/tmp/composer
   expose:
     - "9000"
   extra_hosts:
@@ -29,7 +30,7 @@ x-nginx:
       # - PHP_UPSTREAM_CONTAINER=php-fpm
       - PHP_UPSTREAM_CONTAINER=app
       - PHP_UPSTREAM_PORT=9000
-      - PUID=${PUID:-1000}
+      - PUID=${PUID:-1010}
   volumes_from:
     - applications
   volumes:
@@ -41,112 +42,113 @@ services:
 
 ### Applications Code Container #############################
 
-    applications:
-      image: tianon/true
-      volumes:
-        - ${DOCKER_APPLICATION:-./../}:/var/www
-        - ${DATA_SAVE_PATH:-./.data}/.composer/:/tmp/composer
+  applications:
+    image: tianon/true
+    volumes:
+      - ${DOCKER_APPLICATION:-./../}:/var/www
+      # - ${DATA_SAVE_PATH:-./.data}/.composer/:/tmp/composer
 
 ### PHP-FPM Container #######################################
 
-    app:
-      << : *default-php
-      user: www-data
-      working_dir: /var/www/
+  app:
+    << : *default-php
+    # image: im-app
+    user: www-data
+    working_dir: /var/www/
 
 ### PHP Worker Container #####################################
 
-    php-worker:
-      << : *default-php
-      depends_on:
-        - app
-      user: root
-      working_dir: /etc/supervisor/conf.d/
-      entrypoint:
-        - /usr/bin/supervisord
-        - -n
-        - -c
-        - /etc/supervisord.conf
+  php-worker:
+    << : *default-php
+    depends_on:
+      - app
+    user: root
+    working_dir: /etc/supervisor/conf.d/
+    entrypoint:
+      - /usr/bin/supervisord
+      - -n
+      - -c
+      - /etc/supervisord.conf
 
 ### PHP CRON Container #####################################
 
-    php-cron:
-      << : *default-php
-      depends_on:
-        - app
-      user: root
-      entrypoint:
-        - /usr/sbin/cron
-        - -f
+  php-cron:
+    << : *default-php
+    depends_on:
+      - app
+    user: root
+    entrypoint:
+      - /usr/sbin/cron
+      - -f
 
 ### NGINX Server Container ##################################
 
-    web:
-      << : *default-nginx
-      depends_on:
-        - app
+  web:
+    << : *default-nginx
+    depends_on:
+      - app
 
 ### PostgreSQL Container ####################################
 
-    database:
-      # build:
-        # context: ./postgres
-      image: postgres:10
-      environment:
-        - POSTGRES_DB=wellmax
-        - POSTGRES_USER=postgres
-        - POSTGRES_PASSWORD=postgres
-        # - PGDATA=/var/lib/postgresql/data
-      depends_on:
-        - applications
+  database:
+    # build:
+      # context: ./postgres
+    image: postgres:10
+    environment:
+      - POSTGRES_DB=wellmax
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      # - PGDATA=/var/lib/postgresql/data
+    depends_on:
+      - applications
 
 ### Redis Container #########################################
 
-    redis:
-      image: redis:latest
-      # build:
-        # context: ./redis
+  redis:
+    image: redis:latest
+    # build:
+      # context: ./redis
 
 ### RabbitMQ Container ######################################
 
-    rabbitmq:
-      # build: ./rabbitmq
-      image: rabbitmq:3-management
-      privileged: true
-      environment:
-        - RABBITMQ_DEFAULT_USER=guest
-        - RABBITMQ_DEFAULT_PASS=guest
-        - RABBITMQ_DEFAULT_VHOST=/
-      depends_on:
-        - app
+  rabbitmq:
+    # build: ./rabbitmq
+    image: rabbitmq:3-management
+    privileged: true
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_VHOST=/
+    depends_on:
+      - app
 
 
 ### pgAdmin Container #######################################
 
-    pgadmin:
-      image: fenglc/pgadmin4
-      # build: ./pgadmin
-      environment:
-        - DEFAULT_USER=postgres
-        - DEFAULT_PASSWORD=postgres
-      depends_on:
-        - database
-      expose:
-        - "5050"
+  pgadmin:
+    image: fenglc/pgadmin4
+    # build: ./pgadmin
+    environment:
+      - DEFAULT_USER=postgres
+      - DEFAULT_PASSWORD=postgres
+    depends_on:
+      - database
+    expose:
+      - "5050"
 
 ### Selenium Container ########################################
 
-    selenium:
-      image: selenium/standalone-chrome
-      expose:
-        - "4444"
-      volumes:
-        - /dev/shm:/dev/shm
+  selenium:
+    image: selenium/standalone-chrome
+    expose:
+      - "4444"
+    volumes:
+      - /dev/shm:/dev/shm
 
 ### Volumes Setup #############################################
 
-# volumes:
-#   database:
-#     driver: "local"
-#   composer:
-#     driver: "local"
+volumes:
+  # database:
+    # driver: "local"
+  composer:
+    external: true

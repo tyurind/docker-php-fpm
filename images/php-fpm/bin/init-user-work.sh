@@ -63,3 +63,20 @@ workusermod()
 
 workusermod $*
 exit 0
+
+
+if [[ !-e /etc/www-data.lock ]]; then
+    USER_WORKER="www-data"
+
+    SET_PUID=$(ls -aldn /var/www/.git | cut -d " " -f 3)
+    SET_PGID=$(ls -aldn /var/www/.git | cut -d " " -f 4)
+
+    if [[ "$(id -u www-data)" != "${SET_PUID}" ]] && [[ $(id -u) == "0" ]]; then
+        usermod -o -u ${SET_PUID} $USER_WORKER 2>/dev/null
+        groupmod -o -g ${SET_PGID} $USER_WORKER 2>/dev/null
+
+        echo ${SET_PUID} > /etc/www-data.lock
+    fi
+fi
+
+exec "$@"

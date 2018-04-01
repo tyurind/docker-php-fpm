@@ -1,7 +1,7 @@
 node_modules/
 .idea/
 .vagrant/
-
+.data/
 .DS_Store
 
 Homestead.json

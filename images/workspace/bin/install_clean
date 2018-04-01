@@ -18,5 +18,4 @@ fi
 apt-get autoremove -qy \
     && apt-get autoclean -qy \
     && apt-get clean -qy \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /tmp/* /var/tmp/* /tmp/pear
+    && rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*

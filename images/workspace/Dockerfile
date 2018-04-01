@@ -18,7 +18,7 @@ FROM laradock/workspace:2.0-71
 
 
 # Remove Faillog and Lastlog to reduce the size of the final image.
-RUN rm -rf /var/log/lastlog /var/log/faillog /etc/cron.d/*
+# RUN rm -rf /var/log/lastlog /var/log/faillog /etc/cron.d/*
 
 #
 #--------------------------------------------------------------------------
@@ -40,14 +40,12 @@ ADD  ./bin   /usr/sbin
 #####################################
 USER root
 RUN add-apt-repository -y ppa:ondrej/php && \
-    apt-get update -yqq && \
-    apt-get install -y \
-            sudo \
-            lsb-release \
-            mc \
-            iputils-ping \
-            net-tools
-
+    install_clean \
+      sudo \
+      lsb-release \
+      mc \
+      iputils-ping \
+      net-tools
 
 # ARG PUID=1000
 # ARG PGID=1000
@@ -89,29 +87,29 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 #####################################
 # SOAP:
 #####################################
-RUN apt-get -qy install libxml2-dev php7.1-soap && \
-    apt-get install -qy libldap2-dev && \
-    apt-get install -qy php7.1-ldap  && \
-    apt-get install -qy php7.1-imap
+RUN install_clean \
+    libxml2-dev   \
+    libldap2-dev  \
+    librabbitmq-dev \
+    python python-pip python-dev build-essential \
+    php7.1-soap   \
+    php7.1-ldap   \
+    php7.1-imap   \
+    php7.1-xdebug
 
 #####################################
 # xDebug:
 #####################################
 RUN pecl update-channels
 
-RUN apt-get install -qy php7.1-xdebug && \
-    sed -i 's/^;//g' /etc/php/7.1/cli/conf.d/20-xdebug.ini
-# ADD for REMOTE debugging
-# COPY ./xdebug.ini /etc/php/7.1/cli/conf.d/xdebug.ini
+RUN sed -i 's/^;//g' /etc/php/7.1/cli/conf.d/20-xdebug.ini
 COPY ./laravel.ini /etc/php/7.1/cli/conf.d/50-laravel.ini
 
 
 #####################################
 # AMQP:
 #####################################
-RUN apt-get install librabbitmq-dev -qy && \
-    # Install the mongodb extension
-    pecl -q install amqp && \
+RUN pecl -q install amqp && \
     echo "extension=amqp.so" >> /etc/php/7.1/mods-available/amqp.ini && \
     ln -s /etc/php/7.1/mods-available/amqp.ini /etc/php/7.1/cli/conf.d/30-amqp.ini
 
@@ -135,8 +133,7 @@ RUN curl -s http://getcomposer.org/installer | php && \
 #####################################
 # PYTHON:
 #####################################
-RUN apt-get -qy install python python-pip python-dev build-essential  \
-  && pip install --upgrade pip  \
+RUN pip install --upgrade pip  \
   && pip install --upgrade virtualenv
 
 
@@ -145,8 +142,7 @@ RUN apt-get -qy install python python-pip python-dev build-essential  \
 #####################################
 RUN curl -L https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
     sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
-    apt-get update -yqq && \
-    apt-get install -qy postgresql-client
+    install_clean postgresql-client
 
 #####################################
 # Dusk Dependencies:
@@ -155,8 +151,7 @@ USER root
 ARG CHROME_DRIVER_VERSION=2.32
 ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
 RUN add-apt-repository ppa:ondrej/php \
-  && apt-get update -yq \
-  && apt-get -yq install zip wget unzip xdg-utils \
+  && install_clean zip wget unzip xdg-utils \
     libxpm4 libxrender1 libgtk2.0-0 libnss3 libgconf-2-4 xvfb \
     gtk2-engines-pixbuf xfonts-cyrillic xfonts-100dpi xfonts-75dpi \
     xfonts-base xfonts-scalable x11-apps \

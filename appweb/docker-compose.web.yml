@@ -2,9 +2,10 @@ version: '2.2'
 
 ### SERVICES
 services:
-    web:
-      ports:
-        - "80:80"
+  app:
+  web:
+    ports:
+      - "80:80"
     #   image: "web-image:latest"
     # app:
     #   image: "app-image:latest"
@@ -12,3 +13,9 @@ services:
     #   image: "php-worker-image:latest"
     # php-cron:
     #   image: "php-cron-image:latest"
+
+  pgadmin:
+    # ports:
+      # - "5050:5050"
+    expose:
+      - "5050"

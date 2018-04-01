@@ -18,8 +18,8 @@ FROM laradock/workspace:2.0-71
 RUN rm -rf /var/log/lastlog /var/log/faillog /etc/cron.d/*
 
 COPY ./aliases.sh      /etc/aliases.sh
-ADD  ./bin   /usr/sbin
-ADD  ./src   /usr/local/etc/src
+ADD  ./bin             /usr/sbin
+ADD  ./src             /usr/local/etc/src
 
 #
 #--------------------------------------------------------------------------
@@ -70,7 +70,7 @@ RUN bash /usr/local/etc/src/dusk.sh
 ARG INSTALL_WORKSPACE_SSH=true
 ENV INSTALL_WORKSPACE_SSH ${INSTALL_WORKSPACE_SSH}
 
-ADD insecure_id_rsa /tmp/id_rsa
+ADD insecure_id_rsa     /tmp/id_rsa
 ADD insecure_id_rsa.pub /tmp/id_rsa.pub
 
 RUN bash /usr/local/etc/src/ssh.sh

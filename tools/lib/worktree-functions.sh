@@ -376,3 +376,26 @@ else
     esac
 fi
 # if [[ ]]
+
+
+# sed '/- "[0-9]\+:/d' docker-compose.web.yml
+
+
+######## perl
+#    my $oldstring = "";
+#    # my $filename = "params.sh";
+#    my $filename = $ARGV[0];
+#
+#
+#    open(OUT, $filename) || errout();
+#    while(<OUT>) {
+#        $oldstring .= $_ . "";
+#        # print ;
+#    }
+#    close(OUT);
+#
+#    $newstring = $oldstring;
+#    $newstring =~ s/\n +ports:([\s\S]+?)(\n +[a-z])/\2/mg;
+#
+#    print $newstring;
+##############
