@@ -5,8 +5,7 @@
 #####################################
 CHROME_DRIVER_VERSION=${CHROME_DRIVER_VERSION-2.32}
 
-add-apt-repository ppa:ondrej/php \
-  && apt-get update -yq \
+apt-get update -yq \
   && apt-get -yq install zip wget unzip xdg-utils \
     libxpm4 libxrender1 libgtk2.0-0 libnss3 libgconf-2-4 xvfb \
     gtk2-engines-pixbuf xfonts-cyrillic xfonts-100dpi xfonts-75dpi \
