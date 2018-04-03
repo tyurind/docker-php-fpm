@@ -377,7 +377,15 @@ else
 fi
 # if [[ ]]
 
-
+dockerip_work()
+{
+    docker-compose images | tail -n +3 | cut -d " " -f 1 | \
+    while read i; do \
+        print_style $i warning && \
+        printf "%`expr 25 - length "$i" \& length "$i" \< 25`s" && \
+        echo -e "\t$(dockerip $i)"; \
+    done
+}
 # sed '/- "[0-9]\+:/d' docker-compose.web.yml
 
 

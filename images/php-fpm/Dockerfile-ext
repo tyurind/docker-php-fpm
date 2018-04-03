@@ -18,6 +18,8 @@ ADD  ./bin  /usr/sbin
 #
 
 
+#RUN apt-get -yqq update \
+#    && apt-get -qy install --no-install-recommends \
 RUN install_clean \
         wget curl \
         zip unzip \
@@ -38,6 +40,10 @@ RUN install_clean \
         python-setuptools \
         libxslt-dev \
         libc-client-dev libkrb5-dev
+
+#    && apt-get autoremove -qy \
+#    && apt-get clean -qy \
+#    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # END Core Software's Installation  -------------
 

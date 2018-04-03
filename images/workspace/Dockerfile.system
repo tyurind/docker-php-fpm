@@ -46,6 +46,14 @@ ENV PGID 1000
 RUN bash /usr/local/etc/src/apt-install.sh
 RUN bash /usr/local/etc/src/useradd.sh
 
+ARG NODE_VERSION=9.10.1
+ENV NODE_VERSION ${NODE_VERSION}
+ENV NVM_DIR="/home/workuser/.nvm"
+
+RUN bash /usr/local/etc/src/node.sh
+
+ENV PATH $PATH:$NVM_DIR/versions/node/v${NODE_VERSION}/bin
+
 #
 #--------------------------------------------------------------------------
 # PHP Installation

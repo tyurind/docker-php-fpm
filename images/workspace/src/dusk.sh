@@ -4,6 +4,7 @@
 # Dusk Dependencies:
 #####################################
 CHROME_DRIVER_VERSION=${CHROME_DRIVER_VERSION-2.32}
+
 add-apt-repository ppa:ondrej/php \
   && apt-get update -yq \
   && apt-get -yq install zip wget unzip xdg-utils \
@@ -19,3 +20,7 @@ add-apt-repository ppa:ondrej/php \
   && unzip chromedriver_linux64.zip \
   && mv chromedriver /usr/local/bin/ \
   && rm chromedriver_linux64.zip
+
+
+apt-get clean -qy
+rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*

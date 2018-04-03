@@ -49,3 +49,7 @@ pecl -q install swoole && \
 
 curl -s http://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer
+
+
+apt-get clean -qy
+rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
