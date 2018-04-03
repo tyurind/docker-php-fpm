@@ -5,7 +5,6 @@ PGID=${PGID-1000}
 
 groupadd -g 1000 workuser
 useradd -u 1000 -g workuser -m workuser
-usermod -p "*" workuser
 mkdir -p /home/workuser
 
 usermod -a -G sudo workuser
@@ -23,4 +22,4 @@ chown -R workuser:workuser /home/workuser
 
 echo "" >> /etc/sudoers
 echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers
-# echo 'workuser:workuser' | chpasswd
+echo 'workuser:workuser' | chpasswd
