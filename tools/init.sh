@@ -70,3 +70,8 @@ echo "COMPOSE_FILE=docker-compose.services.yml:_compose/ports.yml" >> $APPDOCK_U
 
 # DOCKER_APPLICATION=.
 # DATA_SAVE_PATH=./.laradock/data
+
+wget -O /tmp/baseimage-docker.zip https://github.com/phusion/baseimage-docker/archive/master.zip && \
+unzip -q -o /tmp/baseimage-docker.zip -d /tmp/ && \
+bash /tmp/baseimage-docker-master/install-tools.sh && \
+rm -rf /tmp/baseimage-docker.zip /tmp/baseimage-docker-master
