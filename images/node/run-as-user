@@ -7,9 +7,35 @@
 # that user.
 ##############################################################################
 
+WORKUSER_LOCK=
+WORKUSER_LOCK_FILE=/etc/workuser.loc
+
+__exec_cmd()
+{
+    local byuser=$1
+
+    if [ -x "/sbin/su-exec" ]; then
+        su-exec "$@"
+    elif [ -x "/usr/sbin/setuser" ]; then
+        if [ "$1" = "root" ]; then
+            shift
+            exec "$@"
+        else
+            exec setuser "$@"
+        fi
+    else
+        if [ "$1" = "root" ]; then
+            shift
+            exec "$@"
+        else
+            exec sudo -u "$@"
+        fi
+    fi
+}
+
 
 if [ "$1" = "sudo" ] || [ "$1" = "setuser" ]; then
-    exec "$@"
+    __exec_cmd root "$@"
     exit
 fi
 
@@ -21,18 +47,17 @@ fi
 
 dev_user="${WORKUSER-dev}"
 stat_dir=$(pwd)
-WORKUSER_LOCK=
-WORKUSER_LOCK_FILE=/etc/workuser.loc
+
 
 __useradd_dev()
 {
-    dev_user=dev
+    # dev_user=dev
     # mkdir -p /etc/sudoers.d
 
-    groupadd -r dev
+    groupadd -r $dev_user
     # useradd dev -s /bin/bash -m -g dev
-    useradd -r -s /bin/bash --create-home -g dev dev
-    echo "dev:password" | chpasswd
+    useradd -r -s /bin/bash --create-home -g $dev_user $dev_user
+    echo "$dev_user:password" | chpasswd
     # echo "dev   ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/dev  && chmod 0440 /etc/sudoers.d/dev
     # rsync -a /root/ /home/dev/
 
@@ -56,10 +81,10 @@ else
     gid=$(stat -c '%g' $stat_dir)
 fi
 
-if [ "0" = "$uid" ]; then
-    exec "$@"
-    exit 0
-fi
+# if [ "0" = "$uid" ]; then
+#     __exec_cmd root "$@"
+#     exit 0
+# fi
 
 
 # Ensure the correct user id is available in the sudoers file (if the
@@ -91,7 +116,7 @@ __workusermod()
         groupmod -g $gid -o $dev_user > /dev/null 2>&1
         touch ${WORKUSER_LOCK_FILE}
     fi
-    if [ "${real_uid}" != "$uid" ]; then
+    if [ "${real_uid}" != "$uid" ] && [ "$uid" != 0 ]; then
         usermod -u $uid -o $dev_user > /dev/null 2>&1
         touch ${WORKUSER_LOCK_FILE}
     fi
@@ -106,10 +131,11 @@ while [ "${1##*/}" = "$CMD_SCRIPT_NAME" ]; do
     shift
 done
 
+__exec_cmd $dev_user "$@"
 
-if [ -x "/usr/sbin/setuser" ]; then
-    exec setuser $dev_user "$@"
-else
-    exec sudo -u $dev_user "$@"
-fi
+# if [ -x "/usr/sbin/setuser" ]; then
+#     exec setuser $dev_user "$@"
+# else
+#     exec sudo -u $dev_user "$@"
+# fi
 
