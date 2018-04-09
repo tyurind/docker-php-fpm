@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# DIR=$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
+DIR_SOURCE=$( cd $( dirname "$0" ) && pwd )
 
 # worktrees.dir
 # worktrees.copy
@@ -121,6 +123,48 @@ __get_worktree_dir()
     fi
 
     echo "${__worktree_dir}"
+}
+
+
+__get_prefix_port()
+{
+    local let iport=20180
+    local let iport_det=100
+
+    local branch=${1-}
+
+    if [ "x${branch}" != "x" ]; then
+        if [ "$(git config --get-regexp worktrees.items.${branch} | grep portprefix)" ]; then
+            echo $(git config --get worktrees.items.${branch}.portprefix)
+            return
+        fi
+    fi
+
+    local items=$(git config --get-regexp worktrees.items | cut -d " " -f 2 | sort | sed '/^$/d; /^0$/d;' )
+    for i in $items; do
+        # echo "$i >> $iport"
+        if [ "$i" != "$iport" ]; then
+            break
+        fi
+        let iport+=iport_det
+    done
+
+    echo "$iport"
+    unset iport;
+}
+
+__replace_docker_compose_port()
+{
+    local ref_path=$1
+    local ref=$2
+    local portprefix=$3
+
+    perl "${DIR_SOURCE}/perl-clear-ports.pl" "${ref_path}/docker-compose.yml" "${portprefix}"
+
+    if [ 0 -ne $? ]; then
+       echo "Replace docker-compose error"
+       return 1;
+    fi
 }
 
 
@@ -258,6 +302,14 @@ branch_init()
     # Создаем отдельную директорию на ветку
     git worktree add "${branch_project}" "${ref}"
 
+    local portprefix=$(__get_prefix_port)
+    # git config "worktrees.items.${ref}.portprefix" "${portprefix}"
+
+    __replace_docker_compose_port "${branch_project}" "${ref}" "${portprefix}"
+    if [ 0 -eq $? ]; then
+        git config "worktrees.items.${ref}.portprefix" "${portprefix}"
+    fi
+
     echo "Init: ${branch_project}"
     # Скопируем папку с уже установлеными пакетами, чтоб быстрее прошла установка composer install
     # cp -r ./vendor "${branch_project}/"
@@ -307,7 +359,7 @@ branch_init()
 branch_down()
 {
     local __worktree_dir=$(__get_worktree_dir)
-    local ref=$(git log -1 --pretty=format:%h)
+    local ref=$(git log -1 --pretty=format:%h $1)
     local branch_project="${__worktree_dir}/${ref}"
 
 
@@ -322,6 +374,7 @@ branch_down()
     cd ${__worktree_dir} \
         && echo "Remove: ${branch_project}" && rm -rf "${branch_project}" \
         && echo "Remove: ${__worktrees}" && rm -rf "${__worktrees}" \
+        && git config --remove-section "worktrees.items.${ref}" \
         && echo "ok"
 }
 
@@ -335,6 +388,18 @@ branch_config()
     __get_config $*
 }
 
+branch_cd()
+{
+    local __repository_dir=$(__get_repository_dir)
+    local __worktree_dir=$(__get_worktree_dir)
+    cd "${__repository_dir}"
+
+    local ref=$(git log -1 --pretty=format:%h $1)
+    local branch_project="${__worktree_dir}/${ref}"
+
+    echo $branch_project
+    cd $branch_project
+}
 
 show_ips()
 {
@@ -369,6 +434,9 @@ else
             ;;
         config)
             branch_config $2
+            ;;
+        cd)
+            branch_cd $2
             ;;
         *)
             echo "Error Arguments"
@@ -407,3 +475,10 @@ dockerip_work()
 #
 #    print $newstring;
 ##############
+
+# git config --get-regexp worktrees.items | cut -d " " -f 2 | sort
+# git config --remove-section worktrees.items.3ftsv
+
+
+# Занятые порты
+# netstat -a -n | grep -P -o ':\d+ ' | sed 's/://g' | sort -n | uniq

@@ -5,13 +5,38 @@ use warnings;
 # my $filename = "";
 # my $start_port = 0;
 
+my $update_file = 0;
+
+# edit files in place
+my $args = @ARGV;
+if ($args > 0) {
+    my $i = $ARGV[0];
+
+    if ($i =~ /-i/) {
+        $i = shift @ARGV;
+        $update_file = 1;
+    }
+}
+
+
+# print $update_file;
+# exit 1;
+
 my ($filename, $start_port) = @ARGV;
+
+
+if (!defined $filename) {
+    print "Error <filename>\n";
+    print "Usage:
+    $0 <FILENAME> [START_PORT]\n";
+    exit(1);
+}
 
 my $filenameDesc = $filename;
 
 if (!defined $start_port) {
     $start_port = 20080;
-    print "defined start_port: $start_port\n";
+    # print "defined start_port: $start_port\n";
 }
 
 $start_port = $start_port + 0;
@@ -59,9 +84,14 @@ sub parse_file
 sub main
 {
     my $string = parse_file();
-    open(my $fh, '>', $filenameDesc) or die "File nod read";
-    print $fh $string;
-    close ($fh);
+
+    if ($update_file == 1) {
+        open(my $fh, '>', $filenameDesc) or die "File nod read";
+        print $fh $string;
+        close ($fh);
+    } else {
+        print $string;
+    }
 }
 
 # print "start_port: $start_port\n";

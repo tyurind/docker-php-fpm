@@ -14,8 +14,8 @@
 
 FROM fobia/php-fpm:71
 
-ARG PUID=1000
-ARG PGID=1000
+ARG PUID=0
+ARG PGID=0
 
 ENV PUID ${PUID}
 ENV PGID ${PGID}
@@ -24,8 +24,12 @@ RUN if [ -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ]; then \
     sed -i 's/^;//' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
 ;fi
 
-RUN usermod -u ${PUID} www-data >/dev/null 2>&1
-RUN groupmod -g ${PGID} www-data >/dev/null 2>&1
+RUN if [ -n "${PUID}" ] && [ "${PUID%:*}" != 0 ]; then \
+  usermod -u ${PUID} www-data >/dev/null 2>&1 \
+;fi
+
+# RUN usermod -u ${PUID} www-data >/dev/null 2>&1
+# RUN groupmod -g ${PGID} www-data >/dev/null 2>&1
 
 RUN install_clean supervisor cron
 
