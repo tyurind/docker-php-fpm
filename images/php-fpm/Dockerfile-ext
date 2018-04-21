@@ -100,8 +100,9 @@ RUN echo "docker-php-ext-install"     && \
 
 # END PHP Installation --------------------------
 
-ADD ./conf.d/*.ini      /usr/local/etc/php/conf.d/
-ADD ./php-fpm.d/*.conf  /usr/local/etc/php-fpm.d/
+ADD ./php.ini                   /usr/local/etc/php/
+ADD ./conf.d/50-custom.ini      /usr/local/etc/php/conf.d/
+ADD ./php-fpm.d/*.conf          /usr/local/etc/php-fpm.d/
 
 RUN curl -s http://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer

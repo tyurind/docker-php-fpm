@@ -10,7 +10,6 @@ x-php-fpm:
   volumes_from:
     - applications
   volumes:
-    # - ${DATA_SAVE_PATH}/composer:/tmp/composer
     - ./php-fpm/php.ini:/usr/local/etc/php/php.ini
     - ./php-fpm/conf.d/:/etc/supervisor/conf.d
     - composer:/tmp/composer

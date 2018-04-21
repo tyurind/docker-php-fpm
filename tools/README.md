@@ -3,7 +3,15 @@
 
 ## gosu
 
+
 install-gosu.sh
+
+```bash
+    dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
+    wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/1.10/gosu-$dpkgArch";
+
+    wget -q --no-check-certificate -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/1.10/gosu-$(dpkg --print-architecture | awk -F- '{ print $NF }')"
+```
 
 ```bash
 
