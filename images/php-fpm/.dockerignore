@@ -4,3 +4,5 @@ tmp*
 *tmp
 /devops/*
 Dockerfile-init
+/conf.d/
+php.ini
