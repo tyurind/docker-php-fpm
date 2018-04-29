@@ -76,7 +76,9 @@ __install_code_style()
 __install_code_style
 
 rm -rf /home/workuser/.composer
+rm -rf /root/.composer/cache
 mv /root/.composer /home/workuser/
+
 chown -R workuser:workuser /home/workuser/.composer
 
 install_clean
