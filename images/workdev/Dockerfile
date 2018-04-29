@@ -13,9 +13,19 @@
 # FROM laradock/workspace
 #   See: https://github.com/laradock/workspace/blob/master/Dockerfile-71
 #
-FROM laradock/workspace:2.0-71
+# FROM laradock/workspace:2.0-71
+FROM phusion/baseimage:latest
 
 RUN rm -rf /var/log/lastlog /var/log/faillog
+
+RUN DEBIAN_FRONTEND=noninteractive
+RUN locale-gen en_US.UTF-8
+
+ENV LANGUAGE=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+ENV LC_CTYPE=en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV TERM xterm
 
 COPY ./Dockerfile      /etc/Dockerfile
 COPY ./aliases.sh      /etc/aliases.sh
@@ -45,6 +55,7 @@ ENV TZ ${TZ}
 ENV PUID 1000
 ENV PGID 1000
 
+RUN bash /usr/local/etc/src/apt-image-setup.sh
 RUN bash /usr/local/etc/src/apt-install.sh
 RUN bash /usr/local/etc/src/useradd.sh
 
