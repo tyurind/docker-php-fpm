@@ -54,7 +54,8 @@ curl -s http://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
     chmod +x /usr/local/bin/composer
 
-gosu workuser:workuser composer global require "hirak/prestissimo"
+composer global require "hirak/prestissimo"
+# gosu workuser:workuser composer global require "hirak/prestissimo"
 
 
 __install_code_style()
@@ -69,10 +70,14 @@ __install_code_style()
 
     cd /usr/local/bin
 
-    find "{$BASE_DIR}/vendor/bin/" -type l -print -exec ln -b -s {} \;
+    find "${BASE_DIR}/vendor/bin/" -type l -print -exec ln -b -s {} \;
 }
 
 __install_code_style
+
+rm -rf /home/workuser/.composer
+mv /root/.composer /home/workuser/
+chown -R workuser:workuser /home/workuser/.composer
 
 install_clean
 # apt-get clean -qy
