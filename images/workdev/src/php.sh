@@ -1,7 +1,7 @@
 #!/bin/bash
 
 apt-get update -qy
-apt-get install -qy php-pear
+apt-get install -qy --no-install-recommends php-pear
 
 #
 #--------------------------------------------------------------------------

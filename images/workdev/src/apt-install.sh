@@ -4,15 +4,6 @@
 
 apt-get update -yqq
 
-apt-get install -qy \
-            sudo \
-            wget curl \
-            lsb-release \
-            mc \
-            iputils-ping \
-            net-tools
-
-
 TZ=${TZ-UTC}
 ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -34,5 +25,4 @@ curl -L https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
     apt-get update -yqq && \
     apt-get install -yq postgresql-client
 
-apt-get clean -qy
-rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
+install_clean

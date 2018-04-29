@@ -52,4 +52,10 @@ install_clean --allow-downgrades --allow-remove-essential \
         git \
         curl \
         vim \
-        nano
+        nano \
+        sudo \
+        wget curl \
+        lsb-release \
+        mc \
+        iputils-ping \
+        net-tools
