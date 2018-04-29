@@ -68,16 +68,8 @@ RUN bash /usr/local/etc/src/useradd.sh
 COPY ./laravel.ini /etc/php/7.1/cli/conf.d/50-laravel.ini
 
 RUN bash /usr/local/etc/src/php.sh
+## -----------------------------------
 
-
-#####################################
-# Dusk Dependencies:
-#####################################
-
-ARG CHROME_DRIVER_VERSION=2.32
-ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
-
-RUN bash /usr/local/etc/src/dusk.sh
 
 #####################################
 # ssh:
@@ -90,6 +82,17 @@ ADD insecure_id_rsa     /tmp/id_rsa
 ADD insecure_id_rsa.pub /tmp/id_rsa.pub
 
 RUN bash /usr/local/etc/src/ssh.sh
+## -----------------------------------
+
+
+#####################################
+# Dusk Dependencies:
+#####################################
+
+ARG CHROME_DRIVER_VERSION=2.32
+ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
+
+RUN bash /usr/local/etc/src/dusk.sh
 ## -----------------------------------
 
 

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 apt-get update -qy
+apt-get install -qy php-pear
 
 #
 #--------------------------------------------------------------------------
@@ -54,6 +55,24 @@ curl -s http://getcomposer.org/installer | php && \
     chmod +x /usr/local/bin/composer
 
 gosu workuser:workuser composer global require "hirak/prestissimo"
+
+
+__install_code_style()
+{
+    local BASE_DIR=/usr/local/lib/composer/code-style
+
+    mkdir -p $BASE_DIR
+    cd $BASE_DIR
+
+    echo '{"config": {"preferred-install": "dist", "sort-packages": true, "optimize-autoloader": true}}' > composer.json
+    composer require symplify/easy-coding-standard
+
+    cd /usr/local/bin
+
+    find "{$BASE_DIR}/vendor/bin/" -type l -print -exec ln -b -s {} \;
+}
+
+__install_code_style
 
 install_clean
 # apt-get clean -qy
