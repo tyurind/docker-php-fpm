@@ -92,7 +92,7 @@ RUN bash /usr/local/etc/src/ssh.sh
 ARG CHROME_DRIVER_VERSION=2.32
 ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
 
-RUN bash /usr/local/etc/src/dusk.sh
+# RUN bash /usr/local/etc/src/dusk.sh
 ## -----------------------------------
 
 

@@ -24,8 +24,9 @@ apt-get update -qy && \
 pecl update-channels
 
 apt-get install -qy php7.1-xdebug && \
-    sed -i 's/^;//g' /etc/php/7.1/cli/conf.d/20-xdebug.ini
-
+    # sed -i 's/^;//g' /etc/php/7.1/cli/conf.d/20-xdebug.ini
+    # sed -i 's/^zend_extension=/;zend_extension=/g' /etc/php/7.1/cli/conf.d/20-xdebug.ini
+    rm -f /etc/php/7.1/cli/conf.d/20-xdebug.ini
 
 #####################################
 # AMQP:
