@@ -28,7 +28,6 @@ ENV LANG=en_US.UTF-8
 ENV TERM xterm
 
 ADD  ./bin             /usr/sbin
-ADD  ./src             /usr/local/etc/src
 
 #
 #--------------------------------------------------------------------------
@@ -53,7 +52,10 @@ ENV WORKUSER workuser
 ENV PUID 1000
 ENV PGID 1000
 
+COPY ./src/apt-image-setup.sh  /usr/local/etc/src/apt-image-setup.sh
 RUN bash /usr/local/etc/src/apt-image-setup.sh
+
+COPY ./src/apt-install.sh  /usr/local/etc/src/apt-install.sh
 RUN bash /usr/local/etc/src/apt-install.sh
 # RUN bash /usr/local/etc/src/useradd.sh
 
@@ -64,7 +66,7 @@ RUN bash /usr/local/etc/src/apt-install.sh
 #--------------------------------------------------------------------------
 #
 COPY ./laravel.ini /etc/php/7.1/cli/conf.d/50-laravel.ini
-
+COPY ./src/php.sh  /usr/local/etc/src/php.sh
 RUN bash /usr/local/etc/src/php.sh
 ## -----------------------------------
 
@@ -79,6 +81,7 @@ ENV INSTALL_WORKSPACE_SSH ${INSTALL_WORKSPACE_SSH}
 ADD insecure_id_rsa     /tmp/id_rsa
 ADD insecure_id_rsa.pub /tmp/id_rsa.pub
 
+COPY ./src/ssh.sh  /usr/local/etc/src/ssh.sh
 RUN bash /usr/local/etc/src/ssh.sh
 ## -----------------------------------
 
@@ -87,8 +90,8 @@ RUN bash /usr/local/etc/src/ssh.sh
 # Dusk Dependencies:
 #####################################
 
-ARG CHROME_DRIVER_VERSION=2.32
-ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
+#ARG CHROME_DRIVER_VERSION=2.32
+#ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
 
 # RUN bash /usr/local/etc/src/dusk.sh
 ## -----------------------------------
@@ -97,13 +100,20 @@ ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
 #####################################
 # Node / NVM:
 #####################################
-
+COPY ./src/node.sh  /usr/local/etc/src/node.sh
 RUN bash /usr/local/etc/src/node.sh
 
+
+#####################################
+# useradd:
+#####################################
+
 COPY ./aliases.sh      /etc/aliases.sh
+COPY ./src/useradd.sh  /usr/local/etc/src/useradd.sh
 
 RUN bash /usr/local/etc/src/useradd.sh
 
+COPY ./src/init-work.sh  /usr/local/etc/src/init-work.sh
 RUN mkdir -p /etc/my_init.d && \
     chmod +x /usr/local/etc/src/init-work.sh && \
     ln -s /usr/local/etc/src/init-work.sh /etc/my_init.d/15-init-work.sh
