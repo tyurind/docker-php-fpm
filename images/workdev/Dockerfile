@@ -105,6 +105,10 @@ RUN bash /usr/local/etc/src/node.sh
 
 RUN bash /usr/local/etc/src/useradd.sh
 
+RUN mkdir -p /etc/my_init.d && \
+    chmod +x /usr/local/etc/src/init-work.sh && \
+    ln -s /usr/local/etc/src/init-work.sh /etc/my_init.d/15-init-work.sh
+
 RUN install_clean
 
 # Set default work directory
