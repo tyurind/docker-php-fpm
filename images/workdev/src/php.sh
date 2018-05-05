@@ -42,21 +42,26 @@ apt-get install librabbitmq-dev -qy && \
 #####################################
 pecl -q install -o -f redis && \
     echo "extension=redis.so" >> /etc/php/7.1/mods-available/redis.ini && \
-    phpenmod redis
+    ln -s /etc/php/7.1/mods-available/redis.ini /etc/php/7.1/cli/conf.d/20-redis.ini
+    # phpenmod redis
 
 #####################################
 # Swoole EXTENSION FOR PHP 7
 #####################################
-pecl -q install swoole && \
+pecl -q install  -o -f swoole && \
     echo "extension=swoole.so" >> /etc/php/7.1/mods-available/swoole.ini && \
     ln -s /etc/php/7.1/mods-available/swoole.ini /etc/php/7.1/cli/conf.d/20-swoole.ini
 
+
+
+#####################################
+# composer
+#####################################
 curl -s http://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer && \
     chmod +x /usr/local/bin/composer
 
 composer global require "hirak/prestissimo"
-# gosu workuser:workuser composer global require "hirak/prestissimo"
 
 
 __install_code_style()
@@ -77,7 +82,7 @@ __install_code_style()
 __install_code_style
 
 # rm -rf /home/workuser/.composer
-# rm -rf /root/.composer/cache
+rm -rf /root/.composer/cache
 # mv /root/.composer /home/workuser/
 
 # chown -R workuser:workuser /home/workuser/.composer
