@@ -27,9 +27,6 @@ ENV LC_CTYPE=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 ENV TERM xterm
 
-COPY ./Dockerfile      /etc/Dockerfile
-COPY ./aliases.sh      /etc/aliases.sh
-COPY ./composer.json   /usr/local/etc/src/composer.json
 ADD  ./bin             /usr/sbin
 ADD  ./src             /usr/local/etc/src
 
@@ -103,11 +100,19 @@ ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
 
 RUN bash /usr/local/etc/src/node.sh
 
+COPY ./aliases.sh      /etc/aliases.sh
+
 RUN bash /usr/local/etc/src/useradd.sh
 
 RUN mkdir -p /etc/my_init.d && \
     chmod +x /usr/local/etc/src/init-work.sh && \
     ln -s /usr/local/etc/src/init-work.sh /etc/my_init.d/15-init-work.sh
+## -----------------------------------
+
+
+COPY ./Dockerfile      /etc/Dockerfile
+
+ENV PATH /var/www:$PATH
 
 RUN install_clean
 
