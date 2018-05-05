@@ -68,3 +68,19 @@ uid=$(stat -c '%u' $stat_dir)
 
 exec gosu $uid "$@"
 ```
+
+```
+# Удаляет и диапазонные и IP порты
+# sed -e 's/^\(\s\+- \)"[0-9a-z\-\.\:]\+\:\([0-9\-]\+\)"$/\1"\2"/; s/\(\s\+- \)"[0-9a-z\-]\+\:\([0-9\-]\+\)"$/\1"\2"/' ports.yml
+# С удалением коментариев
+# sed -e 's/^\(\s\+- \)"[0-9a-z\-\.\:]\+\:\([0-9\-]\+\)"$/\1"\2"/; s/\(\s\+- \)"[0-9a-z\-]\+\:\([0-9\-]\+\)"$/\1"\2"/; /^\s*#.\+$/d' ports.yml
+```
+
+
+# Code Style
+```
+git diff --name-status develop 2>/dev/null | sed '/^[^AMR]/d; /\.php$/!d; s/^.\+\?\s//g; s/^.*$/"&"/;' | tr '\n' ' '
+
+git diff --name-status develop 2>/dev/null | sed '/^[^AMR]/d; /\.php$/!d; s/^.\+\?\s//g; s/^.*$/"&"/;' | tr '\n' ' ' | xargs ecs check --no-progress-bar
+
+```
