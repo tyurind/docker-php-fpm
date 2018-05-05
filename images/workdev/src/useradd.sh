@@ -2,29 +2,33 @@
 
 PUID=${PUID-1000}
 PGID=${PGID-1000}
+WORKUSER=${WORKUSER-workuser}
+WORKUSER_HOME=/home/workuser
 
-groupadd -g 1000 workuser
-useradd -u 1000 -g workuser -m workuser
-mkdir -p /home/workuser
+groupadd -g "${PGID}" "${WORKUSER}"
+useradd -u "${PUID}" -g "${WORKUSER}" -m "${WORKUSER}"
+mkdir -p "${WORKUSER_HOME}"
 
-usermod -a -G sudo workuser
-usermod -s /bin/bash workuser
+usermod -a -G sudo "${WORKUSER}"
+usermod -s /bin/bash "${WORKUSER}"
 
-cp /etc/aliases.sh /home/workuser/aliases.sh
-touch  /home/workuser/.bashrc
+cp /etc/aliases.sh "${WORKUSER_HOME}/aliases.sh"
+touch  "${WORKUSER_HOME}/.bashrc"
 
-echo "" >> /home/workuser/.bashrc
-echo "# Load Custom Aliases" >> /home/workuser/.bashrc
-echo "source /home/workuser/aliases.sh" >> /home/workuser/.bashrc
-echo "" >> /home/workuser/.bashrc
+echo "" >> "${WORKUSER_HOME}/.bashrc"
+echo "# Load Custom Aliases" >> "${WORKUSER_HOME}/.bashrc"
+echo "source ${WORKUSER_HOME}/aliases.sh" >> "${WORKUSER_HOME}/.bashrc"
+echo "" >> "${WORKUSER_HOME}/.bashrc"
 
-mkdir /home/workuser/.composer
+mkdir "${WORKUSER_HOME}/.composer"
 if [ -f "/usr/local/etc/src/composer.json" ]; then
-    cp /usr/local/etc/src/composer.json /home/workuser/.composer/composer.json
+    cp /usr/local/etc/src/composer.json "${WORKUSER_HOME}/.composer/composer.json"
 fi
 
-chown -R workuser:workuser /home/workuser
+chown -R ${WORKUSER}:${WORKUSER} "${WORKUSER_HOME}"
+# chown -R workuser:workuser "${WORKUSER_HOME}"
 
-echo "" >> /etc/sudoers
-echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers
-echo 'workuser:workuser' | chpasswd
+# echo "" >> /etc/sudoers
+# echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers
+sed -i 's/^%sudo.\+/%sudo   ALL=(ALL) NOPASSWD:ALL/' /etc/sudoers
+echo "${WORKUSER}:${WORKUSER}" | chpasswd

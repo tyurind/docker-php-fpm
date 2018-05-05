@@ -41,6 +41,7 @@ install_clean --allow-downgrades --allow-remove-essential \
         php7.1-memcached \
         php7.1-gd \
         php7.1-dev \
+        php-pear \
         pkg-config \
         libcurl4-openssl-dev \
         libedit-dev \

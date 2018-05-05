@@ -1,7 +1,7 @@
 #!/bin/bash
 
-apt-get update -qy
-apt-get install -qy --no-install-recommends php-pear
+# apt-get update -qy
+# apt-get install -qy --no-install-recommends php-pear
 
 #
 #--------------------------------------------------------------------------
@@ -33,7 +33,7 @@ apt-get install -qy php7.1-xdebug && \
 #####################################
 apt-get install librabbitmq-dev -qy && \
     # Install the mongodb extension
-    pecl -q install amqp && \
+    pecl -q install -o -f amqp && \
     echo "extension=amqp.so" >> /etc/php/7.1/mods-available/amqp.ini && \
     ln -s /etc/php/7.1/mods-available/amqp.ini /etc/php/7.1/cli/conf.d/30-amqp.ini
 

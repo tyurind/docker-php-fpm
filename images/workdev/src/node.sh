@@ -26,4 +26,4 @@ chmod +x /usr/local/lib/node_modules/yarn/bin/yarn.js
 
 # mkdir -p /usr/local/lib/node_modules/node-sass
 # cd /usr/local/lib/node_modules/node-sass && npm i node-sass
-# rm -rf /root/package* /root/.npm /root/node_modules
+rm -rf /root/package* /root/.npm /root/node_modules
