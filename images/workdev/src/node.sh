@@ -4,7 +4,7 @@
 
 NODE_VERSION=${NODE_VERSION-9.11.1}
 
-wget "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz"
+wget -q --no-check-certificate "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz"
 tar xf "node-v${NODE_VERSION}-linux-x64.tar.xz"
 mv "node-v${NODE_VERSION}-linux-x64" /usr/local/lib/
 rm -f "node-v${NODE_VERSION}-linux-x64.tar.xz"
