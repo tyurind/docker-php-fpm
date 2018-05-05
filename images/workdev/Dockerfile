@@ -58,7 +58,7 @@ ENV PGID 1000
 
 RUN bash /usr/local/etc/src/apt-image-setup.sh
 RUN bash /usr/local/etc/src/apt-install.sh
-RUN bash /usr/local/etc/src/useradd.sh
+# RUN bash /usr/local/etc/src/useradd.sh
 
 
 #
@@ -102,6 +102,8 @@ ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
 #####################################
 
 RUN bash /usr/local/etc/src/node.sh
+
+RUN bash /usr/local/etc/src/useradd.sh
 
 RUN install_clean
 

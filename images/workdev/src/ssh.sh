@@ -27,10 +27,10 @@ if [ -e /tmp/id_rsa.pub ]; then
     chmod 400 /root/.ssh/id_rsa
 fi
 
-if [ -d "/home/workuser" ]; then
-    cp -r /root/.ssh /home/workuser/.ssh
-    chown -R workuser:workuser /home/workuser/.ssh
-fi
+# if [ -d "/home/workuser" ]; then
+#     cp -r /root/.ssh /home/workuser/.ssh
+#     chown -R workuser:workuser /home/workuser/.ssh
+# fi
 
 
 echo "No SSH host key available. Generating one..."
