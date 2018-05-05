@@ -13,7 +13,7 @@ __init_work()
     local old_uid=$(id -u "${user_name}")
     local user_home=""
 
-    # if [ "${uid}" == "0" ]; then
+    # if [ "${uid}" = "0" ]; then
     #     exit 0
     # fi
 
