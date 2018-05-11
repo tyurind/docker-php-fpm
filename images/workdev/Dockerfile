@@ -109,8 +109,9 @@ RUN bash /usr/local/etc/src/node.sh
 #####################################
 
 COPY ./aliases.sh      /etc/aliases.sh
-COPY ./src/useradd.sh  /usr/local/etc/src/useradd.sh
+RUN cp /etc/aliases.sh /root/.bash_aliases
 
+COPY ./src/useradd.sh  /usr/local/etc/src/useradd.sh
 RUN bash /usr/local/etc/src/useradd.sh
 
 COPY ./src/init-work.sh  /usr/local/etc/src/init-work.sh
@@ -122,7 +123,7 @@ RUN mkdir -p /etc/my_init.d && \
 
 COPY ./Dockerfile      /etc/Dockerfile
 
-ENV PATH /var/www:$PATH
+ENV PATH /var/www:/var/www/vendor/bin:$PATH
 
 RUN install_clean
 

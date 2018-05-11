@@ -63,6 +63,13 @@ curl -s http://getcomposer.org/installer | php && \
 
 composer global require "hirak/prestissimo"
 
+wget --no-check-certificate -q https://cs.sensiolabs.org/download/php-cs-fixer-v2.phar -O /usr/local/bin/php-cs-fixer \
+    && chmod +x /usr/local/bin/php-cs-fixer
+wget --no-check-certificate -q https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar  -O /usr/local/bin/phpcs \
+    && chmod +x /usr/local/bin/phpcs
+wget --no-check-certificate -q https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -O /usr/local/bin/phpcbf \
+    && chmod +x /usr/local/bin/phpcbf
+
 
 __install_code_style()
 {
@@ -76,16 +83,14 @@ __install_code_style()
 
     cd /usr/local/bin
 
-    find "${BASE_DIR}/vendor/bin/" -type l -print -exec ln -b -s {} \;
+    # find "${BASE_DIR}/vendor/bin/" -type l -print -exec ln -b -s {} \;
+    ln -s /usr/local/lib/composer/code-style/vendor/bin/ecs               /usr/local/bin/ecs
+    ln -s /usr/local/lib/composer/code-style/vendor/bin/ecs-container.php /usr/local/bin/ecs-container.php
 }
 
 __install_code_style
 
-# rm -rf /home/workuser/.composer
 rm -rf /root/.composer/cache
-# mv /root/.composer /home/workuser/
-
-# chown -R workuser:workuser /home/workuser/.composer
 
 install_clean
 # apt-get clean -qy

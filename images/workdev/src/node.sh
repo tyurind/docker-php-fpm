@@ -4,6 +4,8 @@
 
 NODE_VERSION=${NODE_VERSION-9.11.1}
 
+mkdir -p /tmp/node
+cd /tmp/node
 wget -q --no-check-certificate "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz"
 tar xf "node-v${NODE_VERSION}-linux-x64.tar.xz"
 mv "node-v${NODE_VERSION}-linux-x64" /usr/local/lib/
@@ -20,10 +22,10 @@ ln -s "${NODE_DIR}/bin/npm" /usr/local/bin/npm
 ln -s "${NODE_DIR}/bin/node" /usr/local/bin/node
 
 npm i -g npm
-npm i -g gulp bower yarn
+npm i -g gulp-cli bower yarn
 npm i -g cross-env
 chmod +x /usr/local/lib/node_modules/yarn/bin/yarn.js
 
 # mkdir -p /usr/local/lib/node_modules/node-sass
 # cd /usr/local/lib/node_modules/node-sass && npm i node-sass
-rm -rf /root/package* /root/.npm /root/node_modules
+rm -rf /root/package* /root/.npm /root/node_modules /tmp/node
