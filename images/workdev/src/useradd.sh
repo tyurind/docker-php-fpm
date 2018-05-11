@@ -38,10 +38,11 @@ echo "${WORKUSER}:${WORKUSER}" | chpasswd
 if [ -d "${WORKUSER_HOME}" ]; then
     cp -r /root/.ssh "${WORKUSER_HOME}/.ssh"
 fi
+if [ -f /root/.bash_aliases ]; then
+    cp /root/.bash_aliases "${WORKUSER_HOME}/"
+fi
 
 rm -rf "${WORKUSER_HOME}/.composer"
-#rm -rf /root/.composer/cache
 cp -r /root/.composer "${WORKUSER_HOME}/"
 
-# chown -R workuser:workuser /home/workuser/.composer
 chown -R ${WORKUSER}:${WORKUSER} "${WORKUSER_HOME}"

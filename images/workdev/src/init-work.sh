@@ -1,7 +1,7 @@
 #!/bin/sh
 
 FILE_LOCK=/etc/workuser.lock
-WORKUSER=workuser
+WORKUSER=${WORKUSER-workuser}
 
 __init_work()
 {
