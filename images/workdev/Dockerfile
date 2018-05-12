@@ -48,9 +48,6 @@ USER root
 ARG TZ=UTC
 
 ENV TZ ${TZ}
-ENV WORKUSER workuser
-ENV PUID 1000
-ENV PGID 1000
 
 COPY ./src/apt-image-setup.sh  /usr/local/etc/src/apt-image-setup.sh
 RUN bash /usr/local/etc/src/apt-image-setup.sh
@@ -75,8 +72,8 @@ RUN bash /usr/local/etc/src/php.sh
 # ssh:
 #####################################
 
-ARG INSTALL_WORKSPACE_SSH=true
-ENV INSTALL_WORKSPACE_SSH ${INSTALL_WORKSPACE_SSH}
+# ARG INSTALL_WORKSPACE_SSH=true
+# ENV INSTALL_WORKSPACE_SSH ${INSTALL_WORKSPACE_SSH}
 
 ADD insecure_id_rsa     /tmp/id_rsa
 ADD insecure_id_rsa.pub /tmp/id_rsa.pub
@@ -107,6 +104,10 @@ RUN bash /usr/local/etc/src/node.sh
 #####################################
 # useradd:
 #####################################
+
+ENV WORKUSER workuser
+ENV PUID 1000
+ENV PGID 1000
 
 COPY ./aliases.sh      /etc/aliases.sh
 RUN cp /etc/aliases.sh /root/.bash_aliases
