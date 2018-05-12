@@ -83,8 +83,7 @@ RUN echo "docker-php-ext-install"     && \
     pecl install -o -f mongodb   && docker-php-ext-enable mongodb   && \
     pecl install -o -f redis     && docker-php-ext-enable redis     && \
     pecl install -o -f swoole    && docker-php-ext-enable swoole    && \
-    pecl install -o -f xdebug    && docker-php-ext-enable xdebug    && \
-        sed -i 's/^zend_extension=/;zend_extension=/g' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+    pecl install -o -f xdebug    && \
 #
     docker-php-ext-configure intl            \
         && docker-php-ext-install intl          \
@@ -109,6 +108,10 @@ RUN curl -s http://getcomposer.org/installer | php && \
 
 RUN wget --no-check-certificate -q -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64" \
     && chmod +x /usr/local/bin/gosu
+
+ADD ./bin/phpenmod         /usr/local/bin/
+RUN chmod +x /usr/local/bin/phpenmod \
+    && ln -s /usr/local/bin/phpenmod /usr/local/bin/phpdismod
 
 #
 #--------------------------------------------------------------------------

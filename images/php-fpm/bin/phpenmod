@@ -1,0 +1,44 @@
+#!/bin/sh
+
+set -ue
+
+SCRIPT_NAME=${0##*/}
+
+enmods()
+{
+    if [ -f /usr/sbin/phpenmod ]; then
+        /usr/sbin/phpenmod $*
+    else
+        /usr/local/bin/docker-php-ext-enable $*
+    fi
+}
+
+dismods()
+{
+    if [ -f /usr/sbin/phpdismod ]; then
+        /usr/sbin/phpdismod $*
+    fi
+    for mod in $@; do
+        rm -f "/usr/local/etc/php/conf.d/docker-php-ext-${mod}.ini"
+    done
+}
+
+
+mods=""
+for mod in $@; do
+    mods="${mods}${mods:+ }${mod%%/*}"
+done
+
+case "${SCRIPT_NAME}" in
+    phpenmod)
+        enmods "$mods"
+        ;;
+    phpdismod)
+        dismods "$mods"
+        ;;
+    *)
+        usage
+        ;;
+esac
+
+exit 0
