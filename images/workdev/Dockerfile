@@ -122,8 +122,9 @@ RUN mkdir -p /etc/my_init.d && \
 
 
 COPY ./Dockerfile      /etc/Dockerfile
+COPY ./README.md       /etc/README.md
 
-ENV PATH /var/www:/var/www/vendor/bin:$PATH
+ENV PATH vendor/bin:/var/www:/var/www/vendor/bin:$PATH
 
 RUN install_clean
 
