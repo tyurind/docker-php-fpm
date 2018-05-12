@@ -34,4 +34,8 @@ if [ ! -f "${FILE_LOCK}" ]; then
     __init_work
 fi
 
+if [ "x${PHP_INSTALL_XDEBUG}" = "xtrue" ]; then
+    phpenmod xdebug
+fi
+
 exit 0
