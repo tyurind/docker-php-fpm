@@ -15,6 +15,10 @@ usermod -s /bin/bash "${WORKUSER}"
 # cp /etc/aliases.sh "${WORKUSER_HOME}/aliases.sh"
 # touch  "${WORKUSER_HOME}/.bashrc"
 
+
+echo "" >> "${WORKUSER_HOME}/.bashrc"
+echo 'export PATH="vendor/bin:/var/www:/var/www/vendor/bin:$PATH"' >> "${WORKUSER_HOME}/.bashrc"
+
 # echo "" >> "${WORKUSER_HOME}/.bashrc"
 # echo "# Load Custom Aliases" >> "${WORKUSER_HOME}/.bashrc"
 # echo "source ${WORKUSER_HOME}/aliases.sh" >> "${WORKUSER_HOME}/.bashrc"

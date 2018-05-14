@@ -13,9 +13,10 @@ __init_work()
     local old_uid=$(id -u "${user_name}")
     local user_home=""
 
-    # if [ "${uid}" = "0" ]; then
-    #     exit 0
-    # fi
+    if [ "${uid}" = "0" ]; then
+        echo "0" | tee "${FILE_LOCK}" > /dev/null
+        exit 0
+    fi
 
     if [ "${old_uid}" != "${uid}" ]; then
         # echo "usermod -u $uid -o ${user_name} 2> /dev/null"
