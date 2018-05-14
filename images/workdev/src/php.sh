@@ -70,6 +70,16 @@ wget --no-check-certificate -q https://squizlabs.github.io/PHP_CodeSniffer/phpcs
 wget --no-check-certificate -q https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -O /usr/local/bin/phpcbf \
     && chmod +x /usr/local/bin/phpcbf
 
+wget --no-check-certificate -q https://phar.phpunit.de/phploc.phar -O /usr/local/bin/phploc \
+    && chmod +x /usr/local/bin/phploc
+
+wget --no-check-certificate -q https://phar.phpunit.de/phpcpd.phar -O /usr/local/bin/phpcpd \
+    && chmod +x /usr/local/bin/phpcpd
+
+wget --no-check-certificate -q http://static.phpmd.org/php/latest/phpmd.phar -O /usr/local/bin/phpmd \
+    && chmod +x /usr/local/bin/phpmd
+
+
 
 __install_code_style()
 {
