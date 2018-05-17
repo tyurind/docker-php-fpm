@@ -15,7 +15,7 @@ __init_work()
 
     if [ "${uid}" = "0" ]; then
         echo "0" | tee "${FILE_LOCK}" > /dev/null
-        exit 0
+        return
     fi
 
     if [ "${old_uid}" != "${uid}" ]; then
@@ -31,12 +31,12 @@ __init_work()
     id -u "${user_name}" | tee "${FILE_LOCK}" > /dev/null
 }
 
-if [ ! -f "${FILE_LOCK}" ]; then
-    __init_work
-fi
-
 if [ "x${PHP_INSTALL_XDEBUG}" = "xtrue" ]; then
     phpenmod xdebug
+fi
+
+if [ ! -f "${FILE_LOCK}" ]; then
+    __init_work
 fi
 
 exit 0

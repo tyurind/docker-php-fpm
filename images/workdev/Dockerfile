@@ -87,6 +87,8 @@ RUN bash /usr/local/etc/src/ssh.sh
 # Dusk Dependencies:
 #####################################
 
+COPY ./src/dusk.sh  /usr/local/etc/src/dusk.sh
+
 #ARG CHROME_DRIVER_VERSION=2.32
 #ENV CHROME_DRIVER_VERSION ${CHROME_DRIVER_VERSION}
 

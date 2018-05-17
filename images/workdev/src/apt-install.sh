@@ -10,9 +10,9 @@ ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 #####################################
 # PYTHON:
 #####################################
-apt-get -qy install python python-pip python-dev build-essential  \
-  && pip install --upgrade pip  \
-  && pip install --upgrade virtualenv
+apt-get -qy install python python-pip python-dev build-essential
+# && pip install --upgrade pip
+# && pip install --upgrade virtualenv
 rm -rf /root/.cache/pip
 
 wget --no-check-certificate -q -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64" \
