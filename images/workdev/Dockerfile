@@ -53,7 +53,7 @@ COPY ./src/apt-image-setup.sh  /usr/local/etc/src/apt-image-setup.sh
 RUN bash /usr/local/etc/src/apt-image-setup.sh
 
 COPY ./src/apt-install.sh  /usr/local/etc/src/apt-install.sh
-RUN bash /usr/local/etc/src/apt-install.sh
+#RUN bash /usr/local/etc/src/apt-install.sh
 # RUN bash /usr/local/etc/src/useradd.sh
 
 
@@ -77,6 +77,7 @@ RUN bash /usr/local/etc/src/php.sh
 
 ADD insecure_id_rsa     /tmp/id_rsa
 ADD insecure_id_rsa.pub /tmp/id_rsa.pub
+ADD ssh                 /tmp/ssh
 
 COPY ./src/ssh.sh  /usr/local/etc/src/ssh.sh
 RUN bash /usr/local/etc/src/ssh.sh

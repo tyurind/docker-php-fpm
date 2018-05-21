@@ -3,6 +3,13 @@
 #####################################
 mkdir -p /root/.ssh
 
+if [ -f /tmp/ssh ]; then
+    cp /tmp/ssh/ssh_host_* /etc/ssh/
+    chmod 600 /etc/ssh/ssh_host_*
+    chmod +r /etc/ssh/*.pub
+fi
+
+
 # if [ ${INSTALL_WORKSPACE_SSH} = true ]; then \
     rm -f /etc/service/sshd/down \
     && /usr/sbin/enable_insecure_key \
