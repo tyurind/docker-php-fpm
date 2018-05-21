@@ -70,7 +70,7 @@ install_clean --allow-downgrades --allow-remove-essential \
 #####################################
 # PYTHON:
 #####################################
-apt-get -qy install python python-pip python-dev build-essential
+install_clean python python-pip python-dev build-essential
 # && pip install --upgrade pip
 # && pip install --upgrade virtualenv
 pip install --upgrade pip
@@ -89,3 +89,4 @@ curl -L https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
     apt-get install -yq postgresql-client
 
 install_clean
+
