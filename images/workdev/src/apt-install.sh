@@ -1,29 +1,25 @@
 #!/bin/bash
 
-# add-apt-repository -y ppa:ondrej/php
-
-apt-get update -yqq
-
-TZ=${TZ-UTC}
-ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
 #####################################
 # PYTHON:
 #####################################
-apt-get -qy install python python-pip python-dev build-essential
+
+rm -rf /usr/bin/pip /usr/bin/pip2
+
+#apt-get update -yqq
+#apt-get -qy install python python-pip
+# apt-get install -qy python-dev build-essential
+
+install_clean python python-pip
+
 # && pip install --upgrade pip
 # && pip install --upgrade virtualenv
+. ~/.bashrc
+
+#pip install --upgrade pip
+pip install redis
+
 rm -rf /root/.cache/pip
 
-wget --no-check-certificate -q -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64" \
-    && chmod +x /usr/local/bin/gosu
-
-#####################################
-# pgsql client
-#####################################
-curl -L https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
-    sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' && \
-    apt-get update -yqq && \
-    apt-get install -yq postgresql-client
-
 install_clean
+

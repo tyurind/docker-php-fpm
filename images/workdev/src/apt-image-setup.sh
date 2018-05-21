@@ -66,17 +66,6 @@ install_clean --allow-downgrades --allow-remove-essential \
         iputils-ping \
         net-tools
 
-
-#####################################
-# PYTHON:
-#####################################
-install_clean python python-pip python-dev build-essential
-# && pip install --upgrade pip
-# && pip install --upgrade virtualenv
-pip install --upgrade pip
-pip install redis
-rm -rf /root/.cache/pip
-
 wget --no-check-certificate -q -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64" \
     && chmod +x /usr/local/bin/gosu
 
