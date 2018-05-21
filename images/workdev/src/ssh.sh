@@ -3,8 +3,8 @@
 #####################################
 mkdir -p /root/.ssh
 
-if [ -f /tmp/ssh ]; then
-    cp /tmp/ssh/ssh_host_* /etc/ssh/
+if [ -d /tmp/ssh/etc ]; then
+    cp /tmp/ssh/etc/ssh_host_* /etc/ssh/
     chmod 600 /etc/ssh/ssh_host_*
     chmod +r /etc/ssh/*.pub
 fi
