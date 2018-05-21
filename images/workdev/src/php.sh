@@ -53,6 +53,11 @@ pecl -q install  -o -f swoole && \
     ln -s /etc/php/7.1/mods-available/swoole.ini /etc/php/7.1/cli/conf.d/20-swoole.ini
 
 
+#####################################
+# ast EXTENSION FOR PHP 7
+#####################################
+pecl -q install -o -f ast && \
+    echo "extension=ast.so" > /etc/php/7.1/mods-available/ast.ini
 
 #####################################
 # composer
