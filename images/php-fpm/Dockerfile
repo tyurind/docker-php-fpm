@@ -8,8 +8,9 @@
 
 FROM php:7.1-fpm
 
-COPY .      /bd_build
-ADD  ./bin  /usr/sbin
+# COPY .      /bd_build
+ADD  ./bin/install_clean   /usr/sbin/install_clean
+ADD  ./bin/setuser         /usr/sbin/setuser
 
 #
 #--------------------------------------------------------------------------
@@ -75,14 +76,14 @@ RUN echo "docker-php-ext-install"     && \
     # docker-php-ext-install xml        && \
     docker-php-ext-install xsl        && \
     docker-php-ext-install zip        && \
-    docker-php-ext-install soap       && \
+    # docker-php-ext-install soap       && \
 #
     pecl install -o -f amqp      && docker-php-ext-enable amqp      && \
     pecl install -o -f apcu      && docker-php-ext-enable apcu      && \
     pecl install -o -f memcached && docker-php-ext-enable memcached && \
-    pecl install -o -f mongodb   && docker-php-ext-enable mongodb   && \
+    # pecl install -o -f mongodb   && docker-php-ext-enable mongodb   && \
     pecl install -o -f redis     && docker-php-ext-enable redis     && \
-    pecl install -o -f swoole    && docker-php-ext-enable swoole    && \
+    # pecl install -o -f swoole    && docker-php-ext-enable swoole    && \
     pecl install -o -f xdebug    && \
 #
     docker-php-ext-configure intl            \
@@ -92,7 +93,8 @@ RUN echo "docker-php-ext-install"     && \
         && docker-php-ext-install ldap          \
     && docker-php-ext-configure imap            \
             --with-kerberos --with-imap-ssl      \
-        && docker-php-ext-install imap
+        && docker-php-ext-install imap          \
+    && rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
 
 #RUN pecl install -o -f imagick              && docker-php-ext-enable imagick
 
@@ -104,7 +106,9 @@ ADD ./50-custom.ini       /usr/local/etc/php/conf.d/
 ADD ./php-fpm.d/*.conf    /usr/local/etc/php-fpm.d/
 
 RUN curl -s http://getcomposer.org/installer | php && \
-    mv composer.phar /usr/local/bin/composer
+    mv composer.phar /usr/local/bin/composer && \
+    composer global require "hirak/prestissimo" && \
+    rm -rf /root/.composer/cache
 
 RUN wget --no-check-certificate -q -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64" \
     && chmod +x /usr/local/bin/gosu
@@ -113,13 +117,25 @@ ADD ./bin/phpenmod         /usr/local/bin/
 RUN chmod +x /usr/local/bin/phpenmod \
     && ln -s /usr/local/bin/phpenmod /usr/local/bin/phpdismod
 
+ADD ./bin/docker-php-entrypoint /usr/local/sbin/
+RUN chmod +x /usr/local/sbin/docker-php-entrypoint
+
+#
+#--------------------------------------------------------------------------
+# User www-data Configuration
+#--------------------------------------------------------------------------
+#
+RUN cp -r /etc/skel /home/www-data \
+    && cp -r /root/.composer /home/www-data/ \
+    && chown -R www-data:www-data /home/www-data \
+    && usermod -d /home/www-data www-data
+RUN touch /usr/local/etc/php/conf.d/51-custom.ini && chown www-data /usr/local/etc/php/conf.d/51-custom.ini
+
 #
 #--------------------------------------------------------------------------
 # Clear code
 #--------------------------------------------------------------------------
 #
-
-
 RUN apt-get autoremove -y \
     && apt-get autoclean -y \
     && apt-get clean -y \
