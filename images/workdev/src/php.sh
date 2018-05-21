@@ -107,6 +107,9 @@ __install_code_style
 
 rm -rf /root/.composer/cache
 
+mkdir -p /usr/local/etc/php
+ln -s /etc/php/7.1/cli/conf.d /usr/local/etc/php/conf.d
+
 install_clean
 # apt-get clean -qy
 # rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
