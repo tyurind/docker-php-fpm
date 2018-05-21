@@ -6,10 +6,13 @@ if [ "${1#-}" != "$1" ]; then
     set -- php-fpm "$@"
 fi
 
-if [ "${1}" != "php-fpm" -o "x${PHP_INSTALL_XDEBUG}" = "xtrue" ]; then
-        if [ "$(id -u)" = "0" -o "$(id -gn)" = "www-data" ]; then
+#if [ "${1}" = "php-fpm" -a
+if [ "x${PHP_INSTALL_XDEBUG}" = "xtrue" ]; then
+    if [ "$(id -u)" = "0" -o "$(id -gn)" = "www-data" ]; then
+        if [ -f "/usr/local/etc/php/conf.d/51-custom.ini" -a "$(cat /usr/local/etc/php/conf.d/51-custom.ini)" != "zend_extension=xdebug.so" ]; then
             echo "zend_extension=xdebug.so" > /usr/local/etc/php/conf.d/51-custom.ini
         fi
+    fi
 fi
 
 exec "$@"
