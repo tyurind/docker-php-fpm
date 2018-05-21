@@ -16,8 +16,22 @@ usermod -s /bin/bash "${WORKUSER}"
 # touch  "${WORKUSER_HOME}/.bashrc"
 
 
-echo "" >> "${WORKUSER_HOME}/.bashrc"
-echo 'export PATH="vendor/bin:/var/www:/var/www/vendor/bin:$PATH"' >> "${WORKUSER_HOME}/.bashrc"
+echo "" >> "/root/.bashrc"
+echo 'export PATH="vendor/bin:/var/www:/var/www/vendor/bin:$PATH"' >> "/root/.bashrc"
+
+#echo "" >> "${WORKUSER_HOME}/.bashrc"
+#echo 'export PATH="vendor/bin:/var/www:/var/www/vendor/bin:$PATH"' >> "${WORKUSER_HOME}/.bashrc"
+
+cat >> "/root/.bashrc"  <<'EO'
+
+if [ "${PHP_IDE_CONFIG}" != "" ]; then
+    PS1='\[\e]0;[${PHP_IDE_CONFIG}]\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}[${PHP_IDE_CONFIG}]\u@\h:\w\$'
+fi
+
+EO
+
+cp /root/.bashrc "${WORKUSER_HOME}/.bashrc"
+
 
 # echo "" >> "${WORKUSER_HOME}/.bashrc"
 # echo "# Load Custom Aliases" >> "${WORKUSER_HOME}/.bashrc"
