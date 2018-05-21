@@ -8,7 +8,7 @@ fi
 
 if [ "${1}" != "php-fpm" ]; then
     if [ "x${PHP_INSTALL_XDEBUG}" = "xtrue" ]; then
-        echo "zend_extension=xdebug.so" > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+        echo "zend_extension=xdebug.so" > /usr/local/etc/php/conf.d/51-custom.ini
     fi
 fi
 
