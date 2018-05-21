@@ -129,7 +129,10 @@ RUN cp -r /etc/skel /home/www-data \
     && cp -r /root/.composer /home/www-data/ \
     && chown -R www-data:www-data /home/www-data \
     && usermod -d /home/www-data www-data
-RUN touch /usr/local/etc/php/conf.d/51-custom.ini && chown www-data /usr/local/etc/php/conf.d/51-custom.ini
+
+RUN touch /usr/local/etc/php/conf.d/51-custom.ini \
+    && chgrp www-data /usr/local/etc/php/conf.d/51-custom.ini \
+    && chmod g+w      /usr/local/etc/php/conf.d/51-custom.ini
 
 #
 #--------------------------------------------------------------------------
