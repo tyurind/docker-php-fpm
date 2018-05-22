@@ -11,18 +11,9 @@ fi
 
 
 # if [ ${INSTALL_WORKSPACE_SSH} = true ]; then \
-    rm -f /etc/service/sshd/down \
+rm -f /etc/service/sshd/down \
     && /usr/sbin/enable_insecure_key \
-    && /etc/my_init.d/00_regen_ssh_host_keys.sh \
-    ### && touch /etc/service/sshd/down \
-    # && cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys \
-    #     && cat /tmp/id_rsa.pub >> /root/.ssh/id_rsa.pub \
-    #     && cat /tmp/id_rsa >> /root/.ssh/id_rsa \
-    #     && rm -f /tmp/id_rsa* \
-    #     && chmod 644 /root/.ssh/authorized_keys /root/.ssh/id_rsa.pub \
-    # && chmod 400 /root/.ssh/id_rsa \
-    # && cp -r /root/.ssh /home/workuser/.ssh \
-    # && chown -R workuser:workuser /home/workuser/.ssh \
+    && /etc/my_init.d/00_regen_ssh_host_keys.sh
 # ;fi
 
 
@@ -33,11 +24,6 @@ if [ -e /tmp/id_rsa.pub ]; then
     chmod 644 /root/.ssh/authorized_keys /root/.ssh/id_rsa.pub
     chmod 400 /root/.ssh/id_rsa
 fi
-
-# if [ -d "/home/workuser" ]; then
-#     cp -r /root/.ssh /home/workuser/.ssh
-#     chown -R workuser:workuser /home/workuser/.ssh
-# fi
 
 
 echo "No SSH host key available. Generating one..."

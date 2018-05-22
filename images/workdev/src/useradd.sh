@@ -22,13 +22,13 @@ echo 'export PATH="vendor/bin:/var/www:/var/www/vendor/bin:$PATH"' >> "/root/.ba
 #echo "" >> "${WORKUSER_HOME}/.bashrc"
 #echo 'export PATH="vendor/bin:/var/www:/var/www/vendor/bin:$PATH"' >> "${WORKUSER_HOME}/.bashrc"
 
-cat >> "/root/.bashrc"  <<'EO'
+cat >> "/root/.bashrc"  <<'EOF'
 
 if [ "${PHP_IDE_CONFIG}" != "" ]; then
     PS1='\[\e]0;[${PHP_IDE_CONFIG}]\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}[${PHP_IDE_CONFIG}]\u@\h:\w\$'
 fi
 
-EO
+EOF
 
 cp /root/.bashrc "${WORKUSER_HOME}/.bashrc"
 

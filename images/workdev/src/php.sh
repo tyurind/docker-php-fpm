@@ -70,19 +70,21 @@ composer global require "hirak/prestissimo"
 
 wget --no-check-certificate -q https://cs.sensiolabs.org/download/php-cs-fixer-v2.phar -O /usr/local/bin/php-cs-fixer \
     && chmod +x /usr/local/bin/php-cs-fixer
-wget --no-check-certificate -q https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar  -O /usr/local/bin/phpcs \
-    && chmod +x /usr/local/bin/phpcs
-wget --no-check-certificate -q https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -O /usr/local/bin/phpcbf \
-    && chmod +x /usr/local/bin/phpcbf
 
-wget --no-check-certificate -q https://phar.phpunit.de/phploc.phar -O /usr/local/bin/phploc \
-    && chmod +x /usr/local/bin/phploc
+# wget --no-check-certificate -q https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar  -O /usr/local/bin/phpcs \
+#     && chmod +x /usr/local/bin/phpcs
+#
+# wget --no-check-certificate -q https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar -O /usr/local/bin/phpcbf \
+#     && chmod +x /usr/local/bin/phpcbf
 
-wget --no-check-certificate -q https://phar.phpunit.de/phpcpd.phar -O /usr/local/bin/phpcpd \
-    && chmod +x /usr/local/bin/phpcpd
-
-wget --no-check-certificate -q http://static.phpmd.org/php/latest/phpmd.phar -O /usr/local/bin/phpmd \
-    && chmod +x /usr/local/bin/phpmd
+# wget --no-check-certificate -q https://phar.phpunit.de/phploc.phar -O /usr/local/bin/phploc \
+#     && chmod +x /usr/local/bin/phploc
+#
+# wget --no-check-certificate -q https://phar.phpunit.de/phpcpd.phar -O /usr/local/bin/phpcpd \
+#     && chmod +x /usr/local/bin/phpcpd
+#
+# wget --no-check-certificate -q http://static.phpmd.org/php/latest/phpmd.phar -O /usr/local/bin/phpmd \
+#     && chmod +x /usr/local/bin/phpmd
 
 
 
