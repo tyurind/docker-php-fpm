@@ -25,7 +25,7 @@ echo 'export PATH="vendor/bin:/var/www:/var/www/vendor/bin:$PATH"' >> "/root/.ba
 cat >> "/root/.bashrc"  <<'EOF'
 
 if [ "${PHP_IDE_CONFIG}" != "" ]; then
-    PS1='\[\e]0;[${PHP_IDE_CONFIG}]\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}[${PHP_IDE_CONFIG}]\u@\h:\w\$'
+    PS1='\[\e]0;[${PHP_IDE_CONFIG}]\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}[${PHP_IDE_CONFIG}]\u@\h:\w\$ '
 fi
 
 EOF
@@ -64,3 +64,4 @@ rm -rf "${WORKUSER_HOME}/.composer"
 cp -r /root/.composer "${WORKUSER_HOME}/"
 
 chown -R ${WORKUSER}:${WORKUSER} "${WORKUSER_HOME}"
+
