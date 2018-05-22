@@ -1,0 +1,14 @@
+#!/bin/sh
+set -ue
+
+SCRIPT_NAME=${0##*/}
+SCRIPT_DIRNAME=$( cd $( dirname "${0}" ) && pwd )
+EXEC_CMD="$(dirname "${SCRIPT_DIRNAME}")/bin/${SCRIPT_NAME}"
+
+set -- "$EXEC_CMD" "$@"
+
+if [ "$(php -m | grep -i xdebug)" = "" ]; then
+    set -- php -d "zend_extension=xdebug.so" "$@"
+fi
+
+exec "$@"
