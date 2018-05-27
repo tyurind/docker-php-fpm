@@ -33,8 +33,8 @@ EOF
 cp /root/.bashrc "${WORKUSER_HOME}/.bashrc"
 
 sed -i 's/^%sudo.\+/%sudo   ALL=(ALL) NOPASSWD:ALL/' /etc/sudoers
-echo "${WORKUSER}:${WORKUSER}" | chpasswd
-
+# echo "${WORKUSER}:${WORKUSER}" | chpasswd
+passwd -d "${WORKUSER}"
 
 # =====================================
 if [ -d "${WORKUSER_HOME}" ]; then
