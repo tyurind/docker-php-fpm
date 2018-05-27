@@ -132,5 +132,5 @@ RUN install_clean
 # Set default work directory
 WORKDIR /var/www
 
-CMD ["sudo", "/sbin/my_init"]
+CMD ["sudo", "-E", "/sbin/my_init"]
 

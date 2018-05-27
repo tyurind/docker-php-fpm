@@ -10,7 +10,14 @@ useradd -u "${PUID}" -g "${WORKUSER}" -m "${WORKUSER}"
 WORKUSER_HOME=$(grep -P "^${WORKUSER}:" /etc/passwd | cut -d":" -f 6)
 
 usermod -a -G sudo "${WORKUSER}"
+usermod -a -G docker_env "${WORKUSER}"
 usermod -s /bin/bash "${WORKUSER}"
+
+#chgrp -R docker_env /etc/container_environment
+#chmod g+rxw   /etc/container_environment
+#chmod -R g+rw /etc/container_environment
+#chmod g+rw /etc/container_environment.sh
+#chmod g+rw /etc/container_environment.json
 
 echo "" >> "/root/.bashrc"
 echo 'export PATH="vendor/bin:/var/www:/var/www/vendor/bin:~/bin:$PATH"' >> "/root/.bashrc"

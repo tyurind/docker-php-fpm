@@ -39,9 +39,12 @@ if [ ! -f "${FILE_LOCK}" ]; then
     __init_work
 fi
 
-if [ "x${WORKUSER_PASSWORD}" != "x" ]; then
-    echo "workuser:${WORKUSER_PASSWORD}" | chpasswd
+if [ "x${WORKUSER_PASSWORD:-del}" = "xdel" ]; then
+    sudo passwd -d workuser
+elif [ "x${WORKUSER_PASSWORD}" != "x" ]; then
+    echo "workuser:${WORKUSER_PASSWORD}" | sudo chpasswd
 fi
+
 
 exit 0
 
