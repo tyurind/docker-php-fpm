@@ -78,8 +78,8 @@ RUN bash /usr/local/etc/src/php.sh
 
 # ADD insecure_id_rsa     /tmp/id_rsa
 # ADD insecure_id_rsa.pub /tmp/id_rsa.pub
-ADD ssh                 /tmp/ssh
-ADD ssh/insecure        /tmp/
+#ADD ssh                 /tmp/ssh
+#ADD ssh/insecure        /tmp/
 
 COPY ./src/ssh.sh  /usr/local/etc/src/ssh.sh
 RUN bash /usr/local/etc/src/ssh.sh
@@ -138,3 +138,4 @@ RUN install_clean
 WORKDIR /var/www
 
 CMD ["sudo", "/sbin/my_init"]
+

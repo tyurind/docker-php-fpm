@@ -39,4 +39,9 @@ if [ ! -f "${FILE_LOCK}" ]; then
     __init_work
 fi
 
+if [ "x${WORKUSER_PASSWORD}" != "x" ]; then
+    echo "workuser:${WORKUSER_PASSWORD}" | chpasswd
+fi
+
 exit 0
+

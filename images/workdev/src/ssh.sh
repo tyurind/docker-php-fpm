@@ -11,9 +11,10 @@ fi
 
 
 # if [ ${INSTALL_WORKSPACE_SSH} = true ]; then \
-rm -f /etc/service/sshd/down \
-    && /usr/sbin/enable_insecure_key \
-    && /etc/my_init.d/00_regen_ssh_host_keys.sh
+rm -f /etc/service/sshd/down && /etc/my_init.d/00_regen_ssh_host_keys.sh
+
+#    && /usr/sbin/enable_insecure_key \
+#    && /etc/my_init.d/00_regen_ssh_host_keys.sh
 # ;fi
 
 
@@ -25,6 +26,11 @@ if [ -e /tmp/id_rsa.pub ]; then
     chmod 400 /root/.ssh/id_rsa
 fi
 
+if [ ! -e /root/.ssh/id_rsa ]; then
+    ssh-keygen -N '' -f /root/.ssh/id_rsa
+    cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+    chmod 644 /root/.ssh/authorized_keys /root/.ssh/id_rsa.pub
+fi
 
 echo "No SSH host key available. Generating one..."
 export LC_ALL=C
