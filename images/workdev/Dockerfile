@@ -52,11 +52,6 @@ ENV TZ ${TZ}
 COPY ./src/apt-image-setup.sh  /usr/local/etc/src/apt-image-setup.sh
 RUN bash /usr/local/etc/src/apt-image-setup.sh
 
-COPY ./src/apt-install.sh  /usr/local/etc/src/apt-install.sh
-RUN bash /usr/local/etc/src/apt-install.sh
-
-# RUN bash /usr/local/etc/src/useradd.sh
-
 
 #
 #--------------------------------------------------------------------------

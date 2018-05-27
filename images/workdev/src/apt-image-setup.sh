@@ -77,5 +77,22 @@ curl -L https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
     apt-get update -yqq && \
     apt-get install -yq postgresql-client
 
-install_clean
 
+#####################################
+# PYTHON:
+#####################################
+
+rm -rf /usr/bin/pip /usr/bin/pip2
+
+install_clean python python-pip
+
+# && pip install --upgrade pip
+# && pip install --upgrade virtualenv
+. ~/.bashrc
+
+# pip install --upgrade pip
+pip install redis
+
+rm -rf /root/.cache/pip
+
+install_clean

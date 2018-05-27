@@ -12,15 +12,8 @@ WORKUSER_HOME=$(grep -P "^${WORKUSER}:" /etc/passwd | cut -d":" -f 6)
 usermod -a -G sudo "${WORKUSER}"
 usermod -s /bin/bash "${WORKUSER}"
 
-# cp /etc/aliases.sh "${WORKUSER_HOME}/aliases.sh"
-# touch  "${WORKUSER_HOME}/.bashrc"
-
-
 echo "" >> "/root/.bashrc"
-echo 'export PATH="vendor/bin:/var/www:/var/www/vendor/bin:$PATH"' >> "/root/.bashrc"
-
-#echo "" >> "${WORKUSER_HOME}/.bashrc"
-#echo 'export PATH="vendor/bin:/var/www:/var/www/vendor/bin:$PATH"' >> "${WORKUSER_HOME}/.bashrc"
+echo 'export PATH="vendor/bin:/var/www:/var/www/vendor/bin:~/bin:$PATH"' >> "/root/.bashrc"
 
 cat >> "/root/.bashrc"  <<'EOF'
 
@@ -32,22 +25,6 @@ EOF
 
 cp /root/.bashrc "${WORKUSER_HOME}/.bashrc"
 
-
-# echo "" >> "${WORKUSER_HOME}/.bashrc"
-# echo "# Load Custom Aliases" >> "${WORKUSER_HOME}/.bashrc"
-# echo "source ${WORKUSER_HOME}/aliases.sh" >> "${WORKUSER_HOME}/.bashrc"
-# echo "" >> "${WORKUSER_HOME}/.bashrc"
-
-# mkdir "${WORKUSER_HOME}/.composer"
-# if [ -f "/usr/local/etc/src/composer.json" ]; then
-#     cp /usr/local/etc/src/composer.json "${WORKUSER_HOME}/.composer/composer.json"
-# fi
-
-# chown -R ${WORKUSER}:${WORKUSER} "${WORKUSER_HOME}"
-# chown -R workuser:workuser "${WORKUSER_HOME}"
-
-# echo "" >> /etc/sudoers
-# echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers
 sed -i 's/^%sudo.\+/%sudo   ALL=(ALL) NOPASSWD:ALL/' /etc/sudoers
 echo "${WORKUSER}:${WORKUSER}" | chpasswd
 

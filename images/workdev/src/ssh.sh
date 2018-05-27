@@ -49,5 +49,3 @@ echo "" >> /etc/ssh/sshd_config \
 
 
 install_clean
-# apt-get clean -qy
-# rm -rf /tmp/* /var/tmp/* /var/lib/apt/lists/*
