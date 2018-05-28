@@ -90,7 +90,7 @@ alias run="npm run"
 alias tree="xtree"
 
 # Xvfb
-alias xvfb="Xvfb -ac :0 -screen 0 1024x768x16 &"
+alias xvfb="sudo -H -b -i Xvfb -ac :0 -screen 0 1024x768x16"
 
 # requires installation of 'https://www.npmjs.com/package/npms-cli'
 alias npms="npms search"

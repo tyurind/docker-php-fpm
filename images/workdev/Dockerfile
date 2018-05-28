@@ -85,6 +85,9 @@ RUN bash /usr/local/etc/src/ssh.sh
 # Dusk Dependencies:
 #####################################
 
+COPY ./src/xvfb.init.sh  /usr/local/etc/src/xvfb.init.sh
+RUN chmod +x /usr/local/etc/src/xvfb.init.sh
+
 COPY ./src/dusk.sh  /usr/local/etc/src/dusk.sh
 
 #ARG CHROME_DRIVER_VERSION=2.32
@@ -133,4 +136,3 @@ RUN install_clean
 WORKDIR /var/www
 
 CMD ["sudo", "-E", "/sbin/my_init"]
-
