@@ -16,7 +16,7 @@ apt-get update -qy && \
     apt-get install -qy libxml2-dev php7.1-soap && \
     apt-get install -qy libldap2-dev && \
     apt-get install -qy php7.1-ldap  && \
-    apt-get install -qy php7.1-imap
+    apt-get install -qy php7.1-imap php7.1-gmp
 
 #####################################
 # xDebug:
