@@ -120,6 +120,11 @@ RUN chmod +x /usr/local/bin/phpenmod \
 ADD ./bin/docker-php-entrypoint /usr/local/sbin/
 RUN chmod +x /usr/local/sbin/docker-php-entrypoint
 
+
+RUN wget --no-check-certificate -q -O /usr/local/bin/php-cs-fixer https://cs.sensiolabs.org/download/php-cs-fixer-v2.phar \
+    && chmod +x /usr/local/bin/php-cs-fixer
+
+
 #
 #--------------------------------------------------------------------------
 # User www-data Configuration
@@ -133,6 +138,33 @@ RUN cp -r /etc/skel /home/www-data \
 RUN touch /usr/local/etc/php/conf.d/51-custom.ini \
     && chgrp www-data /usr/local/etc/php/conf.d/51-custom.ini \
     && chmod g+w      /usr/local/etc/php/conf.d/51-custom.ini
+
+ARG INSTALL_GIT=true
+RUN if [ ${INSTALL_GIT} = true ]; then \
+    install_clean libssl-dev tcl-dev gettext && \
+    cd /tmp && \
+    wget https://www.kernel.org/pub/software/scm/git/git-2.7.3.tar.gz && \
+    tar -xvzf git-2.7.3.tar.gz && \
+    cd git-2.7.3 && \
+    ./configure --with-ssl && \
+    make && make install && \
+    cd / && rm -rf /tmp/git* && \
+    git --version \
+;fi
+
+RUN if [ ${INSTALL_GIT} = true ]; then \
+    install_clean openssh-client libssh2-1-dev libssh2-1 \
+    && cd /tmp \
+    && wget https://github.com/Sean-Der/pecl-networking-ssh2/archive/php7.zip \
+    && unzip php7.zip \
+    && cd pecl-networking-ssh2-php7/ \
+    && phpize \
+    && ./configure \
+    && make && make install \
+    && docker-php-ext-enable ssh2 \
+    && cd / && rm -rf /tmp/* \
+;fi
+
 
 #
 #--------------------------------------------------------------------------
